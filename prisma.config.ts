@@ -1,4 +1,8 @@
+import dotenv from "dotenv";
 import { defineConfig, env } from "prisma/config";
+
+dotenv.config({ path: ".env.local" });
+dotenv.config({ path: ".env" });
 
 /**
  * Prisma 7 reads the migration connection string from here rather than from a

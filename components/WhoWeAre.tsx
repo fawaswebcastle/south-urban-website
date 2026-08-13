@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { SafeImage } from "./ui/SafeImage";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -75,8 +76,9 @@ export function WhoWeAre({
   facts?: readonly Fact[];
   images?: SiteImages;
 } = {}) {
-  const [activeTabId, setActiveTabId] = useState("heritage");
-  const activeTab = TABS.find((t) => t.id === activeTabId) ?? TABS[0];
+  const activeTabs = (WHO_WE_ARE as any)?.tabs || TABS;
+  const [activeTabId, setActiveTabId] = useState(activeTabs[0]?.id || "heritage");
+  const activeTab = activeTabs.find((t: any) => t.id === activeTabId) ?? activeTabs[0] ?? TABS[0];
 
   return (
     <section id="who-we-are" className="scroll-mt-28 bg-paper py-20 sm:py-28">
@@ -102,12 +104,12 @@ export function WhoWeAre({
 
               {/* Interactive Pillar Selector Tabs */}
               <div className="mt-6 flex flex-wrap gap-2">
-                {TABS.map((tab) => (
+                {activeTabs.map((tab: any) => (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTabId(tab.id)}
                     className={`rounded-lg px-3.5 py-1.5 text-[13px] font-semibold transition-all duration-200 ${
-                      tab.id === activeTabId
+                      tab.id === activeTab.id
                         ? "bg-green text-white shadow-xs"
                         : "bg-paper-deep text-ink-soft hover:bg-card hover:text-green border border-rule/60"
                     }`}
@@ -148,9 +150,10 @@ export function WhoWeAre({
 
               <div className="relative overflow-hidden rounded-2xl border border-rule/90 bg-card shadow-xl">
                 <div className="relative h-80 sm:h-96 w-full">
-                  <Image
-                    src={IMAGES.whoWeAreBanner}
-                    alt="A smiling South Indian cooperative member farmer standing in his lush green field during golden hour"
+                  <SafeImage
+                    src={(WHO_WE_ARE as any)?.bannerImage || IMAGES.whoWeAreBanner}
+                    fallbackSrc="/who_we_are_banner.png"
+                    alt="South Indian cooperative member farmer standing in green field"
                     fill
                     className="object-cover object-center transition-transform duration-700 hover:scale-[1.03]"
                     sizes="(min-width: 1024px) 420px, 100vw"
@@ -160,7 +163,7 @@ export function WhoWeAre({
                 {/* Floating Top Badge */}
                 <div className="absolute top-4 left-4 flex items-center gap-2 rounded-xl border border-white/20 bg-black/50 px-3 py-1.5 text-[12px] font-semibold text-white backdrop-blur-md shadow-md">
                   <Award size={14} className="text-gold" />
-                  <span>MSCS Reg: MSCS/CR/1664/2026</span>
+                  <span>{(WHO_WE_ARE as any)?.regBadgeText || "MSCS Reg: MSCS/CR/1664/2026"}</span>
                 </div>
 
                 {/* Floating Bottom Card Overlay */}
@@ -171,10 +174,10 @@ export function WhoWeAre({
                     </div>
                     <div>
                       <h4 className="font-display text-[13.5px] font-semibold leading-tight text-white">
-                        South Urban Agro Co-op
+                        {(WHO_WE_ARE as any)?.cardTitle || "South Urban Agro Co-op"}
                       </h4>
                       <p className="text-[11.5px] text-white/80 mt-0.5">
-                        Serving Kerala &amp; Tamil Nadu
+                        {(WHO_WE_ARE as any)?.cardSubtitle || "Serving Kerala & Tamil Nadu"}
                       </p>
                     </div>
                   </div>
@@ -187,8 +190,9 @@ export function WhoWeAre({
         {/* 3 Core Commitment Pillars */}
         <ScrollReveal delay={200}>
           <div className="mt-16 grid gap-6 sm:grid-cols-3">
-            {PILLARS.map((p) => {
-              const Icon = p.icon;
+            {((WHO_WE_ARE as any)?.pillars || PILLARS).map((p: any) => {
+              const IconMap: Record<string, any> = { Sprout, ShieldCheck, Users2 };
+              const Icon = typeof p.icon === "string" ? (IconMap[p.icon] || Sprout) : (p.icon || Sprout);
               return (
                 <div
                   key={p.title}

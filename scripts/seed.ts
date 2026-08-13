@@ -9,6 +9,10 @@
  *   npm run seed
  */
 
+import dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
+dotenv.config({ path: ".env" });
+
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import * as site from "../data/site";

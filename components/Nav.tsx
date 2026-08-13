@@ -26,6 +26,8 @@ export function Nav({
   board = BOARD_DEFAULT,
   posts = POSTS_DEFAULT,
   services = SERVICES_DEFAULT,
+  whoWeAre,
+  header,
 }: {
   navLinks?: readonly NavLink[];
   contact?: ContactInfo;
@@ -33,8 +35,12 @@ export function Nav({
   board?: readonly Person[];
   posts?: readonly Post[];
   services?: readonly Service[];
+  whoWeAre?: any;
+  header?: any;
 } = {}) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const btnLabel = header?.contactBtnLabel || "Contact Us";
+  const btnHref = header?.contactBtnHref || "#contact";
 
   return (
     <header className="sticky top-0 z-50">
@@ -46,14 +52,14 @@ export function Nav({
             <Logo />
           </Link>
 
-          <MegaMenuNav board={board} posts={posts} />
+          <MegaMenuNav board={board} posts={posts} services={services} whoWeAre={whoWeAre} />
 
           <div className="flex items-center gap-3">
             <SiteSearch navLinks={NAV_LINKS} services={services} />
 
             <div className="hidden lg:block">
-              <Button href="#contact" variant="solid">
-                Contact Us
+              <Button href={btnHref} variant="solid">
+                {btnLabel}
                 <ArrowUpRight size={15} />
               </Button>
             </div>
@@ -83,8 +89,8 @@ export function Nav({
                 {link.label}
               </Link>
             ))}
-            <Button href="#contact" variant="solid" className="mt-4 justify-center">
-              Contact Us
+            <Button href={btnHref} variant="solid" className="mt-4 justify-center">
+              {btnLabel}
               <ArrowUpRight size={15} />
             </Button>
           </Container>

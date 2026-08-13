@@ -16,6 +16,8 @@ const nextConfig: NextConfig = {
      */
     remotePatterns: [
       { protocol: "https", hostname: "south-indian-urban-backend.wc-1.previewbay.com" },
+      { protocol: "http", hostname: "127.0.0.1", port: "1337" },
+      { protocol: "http", hostname: "localhost", port: "1337" },
       { protocol: "https", hostname: "images.unsplash.com" },
       // Vercel Blob, where the admin stores uploaded images. Every store gets
       // its own <id>.public.blob.vercel-storage.com host, hence the wildcard.

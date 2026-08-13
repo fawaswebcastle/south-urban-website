@@ -1,7 +1,7 @@
-import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { Container } from "./ui/Container";
 import { Button } from "./ui/Button";
+import { SafeImage } from "./ui/SafeImage";
 import { HERO as HERO_DEFAULT } from "@/data/site";
 import type { HeroContent } from "@/lib/content-types";
 
@@ -11,8 +11,9 @@ export function Hero({ hero: HERO = HERO_DEFAULT }: { hero?: HeroContent } = {})
   return (
     <section className="on-dark relative isolate flex w-full min-h-[calc(100vh-158px)] flex-col justify-center overflow-hidden bg-green-deep">
       {/* High-res immersive drone hero banner spanning full viewport height */}
-      <Image
+      <SafeImage
         src={main.src}
+        fallbackSrc="/hero_banner.jpg"
         alt={main.alt}
         fill
         priority
@@ -65,9 +66,3 @@ export function Hero({ hero: HERO = HERO_DEFAULT }: { hero?: HeroContent } = {})
     </section>
   );
 }
-
-
-
-
-
-

@@ -25,15 +25,24 @@ export async function generateMetadata({
 
   if (!post) return { title: "Article not found — South Urban" };
 
+  const seo = (post as any).seo;
+  const title = seo?.metaTitle || `${post.title} — South Urban`;
+  const description = seo?.metaDescription || post.excerpt;
+  const ogTitle = seo?.openGraph?.ogTitle || title;
+  const ogDescription = seo?.openGraph?.ogDescription || description;
+
   return {
-    title: `${post.title} — South Urban`,
-    description: post.excerpt,
+    title,
+    description,
+    keywords: seo?.keywords ? seo.keywords.split(",").map((k: string) => k.trim()) : undefined,
+    alternates: seo?.canonicalURL ? { canonical: seo.canonicalURL } : undefined,
     openGraph: {
-      title: post.title,
-      description: post.excerpt,
-      type: "article",
+      title: ogTitle,
+      description: ogDescription,
+      type: (seo?.openGraph?.ogType as any) || "article",
+      url: seo?.openGraph?.ogUrl || undefined,
       publishedTime: post.date,
-      images: [post.image],
+      images: seo?.openGraph?.ogImage?.url ? [seo.openGraph.ogImage.url] : [post.image],
     },
   };
 }
@@ -57,7 +66,9 @@ function Block({ block }: { block: PostBlock }) {
                 aria-hidden
                 className="mt-[0.6em] h-1.5 w-1.5 shrink-0 rounded-full bg-green"
               />
-              <span className="text-[16px] leading-relaxed text-ink-soft">{item}</span>
+              <span className="text-[16px] leading-relaxed text-ink-soft">
+                {item}
+              </span>
             </li>
           ))}
         </ul>
@@ -70,14 +81,18 @@ function Block({ block }: { block: PostBlock }) {
             {block.text}
           </p>
           {block.attribution && (
-            <footer className="label mt-3 text-ink-soft/70">{block.attribution}</footer>
+            <footer className="label mt-3 text-ink-soft/70">
+              {block.attribution}
+            </footer>
           )}
         </blockquote>
       );
 
     default:
       return (
-        <p className="mt-6 text-[16px] leading-[1.75] text-ink-soft">{block.text}</p>
+        <p className="mt-6 text-[16px] leading-[1.75] text-ink-soft">
+          {block.text}
+        </p>
       );
   }
 }
@@ -92,7 +107,9 @@ export default async function BlogPostPage({
 
   if (!post) notFound();
 
-  const related = (await getPosts()).filter((p) => p.slug !== post.slug).slice(0, 3);
+  const related = (await getPosts())
+    .filter((p) => p.slug !== post.slug)
+    .slice(0, 3);
 
   return (
     <main>
@@ -156,7 +173,7 @@ export default async function BlogPostPage({
               text rather than across a gutter of dead space on wide screens. */}
           <div className="grid max-w-[1120px] gap-12 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-16">
             <article>
-              {post.body.map((block, i) => (
+              {post.body.map((block: PostBlock, i: any) => (
                 <Block key={`${block.kind}-${i}`} block={block} />
               ))}
             </article>
@@ -173,7 +190,11 @@ export default async function BlogPostPage({
                   Your unit&apos;s field officer can walk you through what this
                   means for your holding.
                 </p>
-                <Button href="/#contact" variant="solid" className="mt-5 w-full justify-center">
+                <Button
+                  href="/#contact"
+                  variant="solid"
+                  className="mt-5 w-full justify-center"
+                >
                   Talk to the Society
                 </Button>
                 <Link
@@ -206,7 +227,11 @@ export default async function BlogPostPage({
 
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((item) => (
-              <Link key={item.slug} href={`/blog/${item.slug}`} className="group">
+              <Link
+                key={item.slug}
+                href={`/blog/${item.slug}`}
+                className="group"
+              >
                 <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-rule/80 bg-card shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:border-green/50 hover:shadow-md">
                   <div className="relative aspect-[16/10] overflow-hidden">
                     <Image

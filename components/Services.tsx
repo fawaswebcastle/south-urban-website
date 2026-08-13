@@ -10,9 +10,28 @@ import type { Service } from "@/lib/content-types";
 
 export function Services({
   services: SERVICES = SERVICES_DEFAULT,
+  whatWeOffer,
 }: {
   services?: readonly Service[];
+  whatWeOffer?: {
+    tag?: string;
+    title?: string;
+    description?: string;
+    items?: readonly Service[];
+  };
 } = {}) {
+  const items =
+    whatWeOffer?.items && whatWeOffer.items.length > 0
+      ? whatWeOffer.items
+      : SERVICES;
+  const label = whatWeOffer?.tag || "What we offer";
+  const title =
+    whatWeOffer?.title ||
+    "Twelve services, across the whole agricultural value chain.";
+  const intro =
+    whatWeOffer?.description ||
+    "Each opens as you scroll — or select any line to jump to it.";
+
   const [open, setOpen] = useState(0);
   const rows = useRef<(HTMLLIElement | null)[]>([]);
   const holdUntil = useRef(0);
@@ -26,7 +45,7 @@ export function Services({
         const i = Number((hit.target as HTMLElement).dataset.index);
         if (!Number.isNaN(i)) setOpen(i);
       },
-      { rootMargin: "-48% 0px -48% 0px", threshold: 0 }
+      { rootMargin: "-48% 0px -48% 0px", threshold: 0 },
     );
 
     rows.current.forEach((el) => el && io.observe(el));
@@ -34,16 +53,15 @@ export function Services({
   }, []);
 
   return (
-    <section id="services" className="scroll-mt-28 bg-paper-deep/60 py-16 sm:py-24 border-y border-rule/70">
+    <section
+      id="services"
+      className="scroll-mt-28 bg-paper-deep/60 py-16 sm:py-24 border-y border-rule/70"
+    >
       <Container>
-        <SectionHeading
-          label="What we offer"
-          title="Twelve services, across the whole agricultural value chain."
-          intro="Each opens as you scroll — or select any line to jump to it."
-        />
+        <SectionHeading label={label} title={title} intro={intro} />
 
         <ul className="mt-12 border-t border-rule/80">
-          {SERVICES.map((service, i) => {
+          {items.map((service, i) => {
             const isOpen = open === i;
             return (
               <li
@@ -65,7 +83,7 @@ export function Services({
                   <span
                     className={clsx(
                       "font-sans mt-0.5 w-8 shrink-0 text-xs font-semibold tabular-nums tracking-wider transition-colors",
-                      isOpen ? "text-green font-bold" : "text-ink-muted/60"
+                      isOpen ? "text-green font-bold" : "text-ink-muted/60",
                     )}
                   >
                     {String(i + 1).padStart(2, "0")}
@@ -75,7 +93,9 @@ export function Services({
                     <span
                       className={clsx(
                         "font-display block text-[1.2rem] font-semibold leading-snug tracking-tight transition-colors sm:text-[1.4rem]",
-                        isOpen ? "text-green" : "text-ink group-hover:text-green"
+                        isOpen
+                          ? "text-green"
+                          : "text-ink group-hover:text-green",
                       )}
                     >
                       {service.title}
@@ -87,7 +107,9 @@ export function Services({
                     <span
                       className={clsx(
                         "grid transition-all duration-300",
-                        isOpen ? "mt-3.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                        isOpen
+                          ? "mt-3.5 grid-rows-[1fr] opacity-100"
+                          : "grid-rows-[0fr] opacity-0",
                       )}
                     >
                       <span className="overflow-hidden">
@@ -103,7 +125,7 @@ export function Services({
                       "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md border transition-all duration-200",
                       isOpen
                         ? "rotate-45 border-green bg-green text-white"
-                        : "border-rule bg-card text-ink-soft group-hover:border-green group-hover:text-green"
+                        : "border-rule bg-card text-ink-soft group-hover:border-green group-hover:text-green",
                     )}
                   >
                     <Plus size={14} />
@@ -117,4 +139,3 @@ export function Services({
     </section>
   );
 }
-

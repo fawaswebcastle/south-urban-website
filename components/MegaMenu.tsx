@@ -19,17 +19,32 @@ import {
   GraduationCap,
 } from "lucide-react";
 import { Container } from "./ui/Container";
-import { BOARD as BOARD_DEFAULT, POSTS as POSTS_DEFAULT } from "@/data/site";
-import type { Person, Post } from "@/lib/content-types";
+import {
+  BOARD as BOARD_DEFAULT,
+  POSTS as POSTS_DEFAULT,
+  SERVICES as SERVICES_DEFAULT,
+} from "@/data/site";
+import type { Person, Post, Service } from "@/lib/content-types";
 
-type NavTab = "About Us" | "Services" | "Leadership" | "Careers" | "Gallery" | "Blogs" | null;
+type NavTab =
+  | "About Us"
+  | "Services"
+  | "Leadership"
+  | "Careers"
+  | "Gallery"
+  | "Blogs"
+  | null;
 
 export function MegaMenuNav({
   board: BOARD = BOARD_DEFAULT,
   posts: POSTS = POSTS_DEFAULT,
+  services: SERVICES = SERVICES_DEFAULT,
+  whoWeAre,
 }: {
   board?: readonly Person[];
   posts?: readonly Post[];
+  services?: readonly Service[];
+  whoWeAre?: any;
 } = {}) {
   const [activeTab, setActiveTab] = useState<NavTab>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -103,15 +118,35 @@ export function MegaMenuNav({
           className="absolute top-full left-1/2 -translate-x-1/2 z-50 mt-2 w-screen max-w-5xl px-4 animate-in fade-in-50 slide-in-from-top-2 duration-200"
         >
           <div className="overflow-hidden rounded-2xl border border-rule/80 bg-card/98 p-6 shadow-2xl backdrop-blur-xl ring-1 ring-black/5">
-            {activeTab === "About Us" && <AboutMegaContent onClose={() => setActiveTab(null)} />}
-            {activeTab === "Services" && <ServicesMegaContent onClose={() => setActiveTab(null)} />}
-            {activeTab === "Leadership" && (
-              <LeadershipMegaContent onClose={() => setActiveTab(null)} board={BOARD} />
+            {activeTab === "About Us" && (
+              <AboutMegaContent
+                onClose={() => setActiveTab(null)}
+                whoWeAre={whoWeAre}
+              />
             )}
-            {activeTab === "Careers" && <CareersMegaContent onClose={() => setActiveTab(null)} />}
-            {activeTab === "Gallery" && <GalleryMegaContent onClose={() => setActiveTab(null)} />}
+            {activeTab === "Services" && (
+              <ServicesMegaContent
+                onClose={() => setActiveTab(null)}
+                services={SERVICES}
+              />
+            )}
+            {activeTab === "Leadership" && (
+              <LeadershipMegaContent
+                onClose={() => setActiveTab(null)}
+                board={BOARD}
+              />
+            )}
+            {activeTab === "Careers" && (
+              <CareersMegaContent onClose={() => setActiveTab(null)} />
+            )}
+            {activeTab === "Gallery" && (
+              <GalleryMegaContent onClose={() => setActiveTab(null)} />
+            )}
             {activeTab === "Blogs" && (
-              <BlogsMegaContent onClose={() => setActiveTab(null)} posts={POSTS} />
+              <BlogsMegaContent
+                onClose={() => setActiveTab(null)}
+                posts={POSTS}
+              />
             )}
           </div>
         </div>
@@ -145,7 +180,9 @@ function NavButton({
       <ChevronDown
         size={13}
         className={`transition-transform duration-200 ${
-          active ? "rotate-180 text-green" : "text-ink-soft/70 group-hover:text-green"
+          active
+            ? "rotate-180 text-green"
+            : "text-ink-soft/70 group-hover:text-green"
         }`}
       />
     </Link>
@@ -156,7 +193,19 @@ function NavButton({
    Mega Menu Contents
    ========================================================================= */
 
-function AboutMegaContent({ onClose }: { onClose: () => void }) {
+function AboutMegaContent({
+  onClose,
+  whoWeAre,
+}: {
+  onClose: () => void;
+  whoWeAre?: any;
+}) {
+  const badgeText = whoWeAre?.regBadgeText || "MSCS Reg: MSCS/CR/1664/2026";
+  const desc =
+    whoWeAre?.body?.[0] ||
+    whoWeAre?.lead ||
+    "Registered under the Multi State Cooperative Societies Act, 2002. Serving member farmers across Kerala & Tamil Nadu with transparency and democratic governance.";
+
   return (
     <div className="grid gap-6 md:grid-cols-3">
       <div className="space-y-3">
@@ -166,11 +215,9 @@ function AboutMegaContent({ onClose }: { onClose: () => void }) {
             Cooperative Overview
           </h4>
         </div>
-        <p className="text-[13.5px] leading-relaxed text-ink-soft">
-          Registered under the Multi State Cooperative Societies Act, 2002. Serving member farmers across Kerala &amp; Tamil Nadu with transparency and democratic governance.
-        </p>
+        <p className="text-[13.5px] leading-relaxed text-ink-soft">{desc}</p>
         <div className="inline-flex items-center gap-2 rounded-lg bg-green/10 px-3 py-1.5 text-[12px] font-medium text-green">
-          Reg: MSCS/CR/1664/2026
+          {badgeText}
         </div>
       </div>
 
@@ -182,7 +229,9 @@ function AboutMegaContent({ onClose }: { onClose: () => void }) {
           </h4>
         </div>
         <p className="text-[13.5px] leading-relaxed text-ink-soft">
-          To empower rural agricultural communities with affordable credit, quality farm inputs, direct market linkages, and member welfare programs.
+          To empower rural agricultural communities with affordable credit,
+          quality farm inputs, direct market linkages, and member welfare
+          programs.
         </p>
         <Link
           href="#who-we-are"
@@ -199,7 +248,8 @@ function AboutMegaContent({ onClose }: { onClose: () => void }) {
           Member Benefit Brochure
         </h5>
         <p className="text-[12.5px] text-ink-soft leading-relaxed">
-          Download our comprehensive guide detailing member rights, credit schemes, and thrift options.
+          Download our comprehensive guide detailing member rights, credit
+          schemes, and thrift options.
         </p>
         <Link
           href="#contact"
@@ -213,10 +263,21 @@ function AboutMegaContent({ onClose }: { onClose: () => void }) {
   );
 }
 
-// NOTE: this panel's tiles are hand-written below rather than read from the
-// Services collection, so editing a service in the admin does not change them.
-// Worth reconciling — see the ServiceTile calls further down.
-function ServicesMegaContent({ onClose }: { onClose: () => void }) {
+function ServicesMegaContent({
+  onClose,
+  services = SERVICES_DEFAULT,
+}: {
+  onClose: () => void;
+  services?: readonly Service[];
+}) {
+  const topServices = services.slice(0, 4);
+  const ICONS = [
+    <Coins key="1" size={18} className="text-green" />,
+    <TrendingUp key="2" size={18} className="text-green" />,
+    <Award key="3" size={18} className="text-green" />,
+    <Tractor key="4" size={18} className="text-green" />,
+  ];
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between border-b border-rule/70 pb-3">
@@ -225,7 +286,8 @@ function ServicesMegaContent({ onClose }: { onClose: () => void }) {
             Member Financial &amp; Agricultural Services
           </h4>
           <p className="text-[12.5px] text-ink-soft">
-            12 specialized solutions exclusively for cooperative society members
+            {services.length} specialized solutions exclusively for cooperative
+            society members
           </p>
         </div>
         <Link
@@ -233,35 +295,20 @@ function ServicesMegaContent({ onClose }: { onClose: () => void }) {
           onClick={onClose}
           className="text-[12.5px] font-medium text-green hover:underline flex items-center gap-1"
         >
-          View all 12 services &rarr;
+          View all {services.length} services &rarr;
         </Link>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <ServiceTile
-          icon={<Coins size={18} className="text-green" />}
-          title="Thrift &amp; Savings"
-          desc="Recurring and fixed deposit schemes with attractive member returns."
-          onClose={onClose}
-        />
-        <ServiceTile
-          icon={<TrendingUp size={18} className="text-green" />}
-          title="Agricultural Credit"
-          desc="Affordable loans for crops, irrigation, livestock, and mechanisation."
-          onClose={onClose}
-        />
-        <ServiceTile
-          icon={<Award size={18} className="text-green" />}
-          title="Gold-Linked Credit"
-          desc="Quick liquidity against gold for urgent personal and farm needs."
-          onClose={onClose}
-        />
-        <ServiceTile
-          icon={<Tractor size={18} className="text-green" />}
-          title="Machinery &amp; Training"
-          desc="Shared equipment access and modern organic farming workshops."
-          onClose={onClose}
-        />
+        {topServices.map((service, i) => (
+          <ServiceTile
+            key={service.title}
+            icon={ICONS[i % ICONS.length]}
+            title={service.title}
+            desc={service.summary || service.body || ""}
+            onClose={onClose}
+          />
+        ))}
       </div>
     </div>
   );
@@ -329,21 +376,29 @@ function LeadershipMegaContent({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        {topBoard.map((person) => (
+        {topBoard.map((person, i) => (
           <Link
-            key={person.name}
+            key={`${person.name}-top-${i}`}
             href="#leadership"
             onClick={onClose}
             className="group flex items-center gap-3 rounded-xl border border-rule/70 bg-paper/60 p-3 transition-all hover:border-green/50 hover:bg-card shadow-2xs"
           >
             <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-rule">
-              <Image src={person.photo} alt={person.name} fill className="object-cover object-top" sizes="48px" />
+              <Image
+                src={person.photo}
+                alt={person.name}
+                fill
+                className="object-cover object-top"
+                sizes="48px"
+              />
             </div>
             <div className="min-w-0">
               <h5 className="font-display text-[13.5px] font-semibold text-ink group-hover:text-green transition-colors truncate">
                 {person.name}
               </h5>
-              <p className="text-[11.5px] font-medium text-green">{person.role}</p>
+              <p className="text-[11.5px] font-medium text-green">
+                {person.role}
+              </p>
             </div>
           </Link>
         ))}
@@ -363,7 +418,8 @@ function CareersMegaContent({ onClose }: { onClose: () => void }) {
           </h4>
         </div>
         <p className="text-[13.5px] leading-relaxed text-ink-soft">
-          Build a rewarding career serving agricultural communities across Kerala and Tamil Nadu.
+          Build a rewarding career serving agricultural communities across
+          Kerala and Tamil Nadu.
         </p>
         <Link
           href="#careers"
@@ -380,7 +436,8 @@ function CareersMegaContent({ onClose }: { onClose: () => void }) {
           Field Agriculture Officer
         </h5>
         <p className="text-[12.5px] text-ink-soft">
-          Full-time &bull; Operations &bull; Field Work across Kerala &amp; Tamil Nadu
+          Full-time &bull; Operations &bull; Field Work across Kerala &amp;
+          Tamil Nadu
         </p>
         <Link
           href="#careers"
@@ -413,7 +470,9 @@ function GalleryMegaContent({ onClose }: { onClose: () => void }) {
         </Link>
       </div>
       <p className="text-[13.5px] text-ink-soft">
-        Explore high-resolution photography capturing drone field operations, member card distribution, dairy units, and harvesting across Kerala and Tamil Nadu.
+        Explore high-resolution photography capturing drone field operations,
+        member card distribution, dairy units, and harvesting across Kerala and
+        Tamil Nadu.
       </p>
     </div>
   );
@@ -452,7 +511,13 @@ function BlogsMegaContent({
         className="group flex items-center gap-4 rounded-xl border border-rule/70 bg-paper/60 p-3 transition-colors hover:border-green/50"
       >
         <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-lg border border-rule">
-          <Image src={latest.image} alt={latest.title} fill className="object-cover" sizes="80px" />
+          <Image
+            src={latest.image}
+            alt={latest.title}
+            fill
+            className="object-cover"
+            sizes="80px"
+          />
         </div>
         <div>
           <span className="label text-green">{latest.read}</span>

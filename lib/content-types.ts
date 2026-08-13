@@ -53,7 +53,16 @@ export type Notification = {
 
 export type GalleryItem = { src: string; alt: string; category: string };
 
-export type ContactInfo = { phone: string; email: string; address: string };
+export type ContactInfo = {
+  tag?: string;
+  title?: string;
+  description?: string;
+  phone: string;
+  email: string;
+  address: string;
+  newsletterTitle?: string;
+  newsletterSubtitle?: string;
+};
 
 export type CompanyDetails = {
   intro: string;
@@ -87,3 +96,18 @@ export type CompassPanel = {
   lead: string;
   items: readonly string[];
 };
+
+export type FooterContent = {
+  description: string;
+  regText: string;
+  areaText: string;
+  quickLinksTitle: string;
+  quickLinks: readonly NavLink[];
+  contactTitle: string;
+  phone: string;
+  email: string;
+  address: string;
+  copyright: string;
+  actText: string;
+};
+

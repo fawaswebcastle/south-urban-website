@@ -32,10 +32,12 @@ import {
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { SafeImage } from "@/components/ui/SafeImage";
 import { getContent } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "About the Society — South Urban Agro Multi State Co-operative Society Ltd.",
+  title:
+    "About the Society — South Urban Agro Multi State Co-operative Society Ltd.",
   description:
     "How South Urban Agro Multi State Co-operative Society Ltd. is constituted, what a multi-state agro cooperative does, our vision, mission, values and how to become a member.",
 };
@@ -74,7 +76,6 @@ export default async function AboutPage() {
   const {
     companyDetails: COMPANY_DETAILS,
     coopActivities: COOP_ACTIVITIES,
-    coopPrinciples: COOP_PRINCIPLES,
     facts: FACTS,
     goals: GOALS,
     images: IMAGES,
@@ -129,8 +130,11 @@ export default async function AboutPage() {
 
           {/* Key facts, sitting on the banner rather than in a slab of their own */}
           <dl className="mt-12 grid grid-cols-2 gap-y-8 border-t border-white/15 pt-8 lg:grid-cols-4">
-            {FACTS.map((fact) => (
-              <div key={fact.label} className="px-1 lg:border-l lg:border-white/15 lg:first:border-l-0 lg:px-8 lg:first:pl-0">
+            {FACTS.map((fact: any) => (
+              <div
+                key={fact.label}
+                className="px-1 lg:border-l lg:border-white/15 lg:first:border-l-0 lg:px-8 lg:first:pl-0"
+              >
                 <dt className="sr-only">{fact.label}</dt>
                 <dd>
                   <span className="font-display block text-3xl font-semibold leading-none text-white sm:text-4xl">
@@ -154,8 +158,8 @@ export default async function AboutPage() {
             <ScrollReveal direction="up">
               <div className="relative mx-auto w-full max-w-[460px] lg:sticky lg:top-32 lg:mx-0">
                 <div className="relative h-[380px] overflow-hidden rounded-2xl border border-rule/80 bg-card shadow-lg sm:h-[460px]">
-                  <Image
-                    src={IMAGES.harvest}
+                  <SafeImage
+                    src={(OVERVIEW as any).mainImage || IMAGES.harvest}
                     alt="A member harvesting paddy by hand at golden hour"
                     fill
                     className="object-cover"
@@ -188,7 +192,7 @@ export default async function AboutPage() {
                 </h2>
 
                 <div className="mt-6 space-y-5 text-[15.5px] leading-relaxed text-ink-soft">
-                  {[...OVERVIEW.body, ...COOP_PRINCIPLES].map((p, i) => (
+                  {OVERVIEW.body.map((p: string, i: number) => (
                     <p key={`overview-${i}`}>{p}</p>
                   ))}
                 </div>
@@ -200,19 +204,31 @@ export default async function AboutPage() {
           <ScrollReveal delay={150}>
             <div className="mt-24 border-t border-rule pt-12 lg:mt-28">
               <h3 className="font-display max-w-[24ch] text-xl font-semibold leading-snug tracking-tight text-ink sm:text-2xl">
-                What the Society puts its resources behind
+                {COOP_ACTIVITIES.title ||
+                  "What the Society puts its resources behind"}
               </h3>
 
               <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {COOP_ACTIVITIES.map((item) => {
-                  const Icon = ICONS[item.icon];
+                {(COOP_ACTIVITIES.items || COOP_ACTIVITIES).map((item: any) => {
+                  const Icon = (ICONS as any)[item.icon] || Sprout;
+                  const iconMedia = (item as any).iconMedia;
                   return (
                     <div
                       key={item.title}
                       className="group rounded-2xl border border-rule/80 bg-card p-6 shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:border-green/50 hover:shadow-md"
                     >
-                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-green/10 text-green transition-colors group-hover:bg-green group-hover:text-white">
-                        <Icon size={19} />
+                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-green/10 text-green transition-colors group-hover:bg-green group-hover:text-white overflow-hidden p-2">
+                        {iconMedia ? (
+                          <SafeImage
+                            src={iconMedia}
+                            alt={item.title}
+                            width={20}
+                            height={20}
+                            className="object-contain"
+                          />
+                        ) : (
+                          <Icon size={19} />
+                        )}
                       </span>
                       <h4 className="font-display mt-4 text-[15.5px] font-semibold text-ink">
                         {item.title}
@@ -236,8 +252,11 @@ export default async function AboutPage() {
             <div className="overflow-hidden rounded-3xl border border-rule/80 bg-card shadow-sm">
               <div className="grid lg:grid-cols-[0.85fr_1.15fr]">
                 <div className="relative min-h-[280px] lg:min-h-full">
-                  <Image
-                    src={IMAGES.whoWeAreBanner}
+                  <SafeImage
+                    src={
+                      (COMPANY_DETAILS as any).bannerImage ||
+                      IMAGES.whoWeAreBanner
+                    }
                     alt="A member farmer standing in his field at golden hour"
                     fill
                     className="object-cover"
@@ -246,25 +265,30 @@ export default async function AboutPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-green-deep/70 via-transparent to-transparent" />
                   <div className="absolute bottom-5 left-5 right-5 text-white">
                     <p className="font-display text-[15px] font-semibold leading-snug">
-                      One membership, two states
+                      {(COMPANY_DETAILS as any).bannerTitle ||
+                        "One membership, two states"}
                     </p>
                     <p className="mt-1 text-[12.5px] text-white/75">
-                      Kerala and Tamil Nadu, on a single Society record.
+                      {(COMPANY_DETAILS as any).bannerSubtitle ||
+                        "Kerala and Tamil Nadu, on a single Society record."}
                     </p>
                   </div>
                 </div>
 
                 <div className="p-7 sm:p-10 lg:p-12">
-                  <span className="label text-green">Company details</span>
+                  <span className="label text-green">
+                    {(COMPANY_DETAILS as any).tag || "Company details"}
+                  </span>
                   <h2 className="font-display mt-3 max-w-[22ch] text-2xl font-semibold leading-[1.15] tracking-tight text-ink sm:text-3xl">
-                    Constituted under the MSCS Act, 2002
+                    {(COMPANY_DETAILS as any).title ||
+                      "Constituted under the MSCS Act, 2002"}
                   </h2>
                   <p className="mt-4 max-w-[62ch] text-[15px] leading-relaxed text-ink-soft">
                     {COMPANY_DETAILS.intro}
                   </p>
 
                   <dl className="mt-9 grid gap-x-10 gap-y-7 sm:grid-cols-2">
-                    {COMPANY_DETAILS.rows.map((row, i) => {
+                    {COMPANY_DETAILS.rows.map((row: any, i: number) => {
                       const Icon = DETAIL_ICONS[i] ?? BadgeCheck;
                       return (
                         <div key={row.label} className="flex gap-3.5">
@@ -272,7 +296,9 @@ export default async function AboutPage() {
                             <Icon size={17} />
                           </span>
                           <div>
-                            <dt className="label text-ink-soft/70">{row.label}</dt>
+                            <dt className="label text-ink-soft/70">
+                              {row.label}
+                            </dt>
                             <dd className="mt-1.5 text-[14.5px] font-medium leading-snug text-ink">
                               {row.value}
                             </dd>
@@ -302,8 +328,8 @@ export default async function AboutPage() {
              *  so its statement is inscribed rather than typed onto the page. */}
             <ScrollReveal className="lg:h-full">
               <div className="relative flex h-full flex-col justify-center overflow-hidden rounded-[1.75rem] border border-gold/25 shadow-[0_40px_90px_-50px_rgb(0,0,0)]">
-                <Image
-                  src={IMAGES.drone}
+                <SafeImage
+                  src={(VISION as any).bgImage || IMAGES.drone}
                   alt=""
                   aria-hidden
                   fill
@@ -336,7 +362,7 @@ export default async function AboutPage() {
                 </h2>
 
                 <ul className="mt-9 border-t border-white/15">
-                  {MISSION.items.map((item) => (
+                  {MISSION.items.map((item: any) => (
                     <li
                       key={item.focus}
                       className="group border-b border-white/15 py-5 transition-colors duration-300 hover:border-gold/50"
@@ -364,14 +390,14 @@ export default async function AboutPage() {
           <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
             <ScrollReveal>
               <div className="lg:sticky lg:top-32">
-                <span className="label text-green">Objectives</span>
+                <span className="label text-green">{(OBJECTIVES as any).tag || "Objectives"}</span>
                 <h2 className="font-display mt-3 max-w-[16ch] text-[clamp(1.75rem,3.4vw,2.6rem)] font-semibold leading-[1.12] tracking-tight text-ink">
-                  Four commitments that shape the working day
+                  {(OBJECTIVES as any).title || "Four commitments that shape the working day"}
                 </h2>
 
                 <div className="relative mt-8 h-[300px] overflow-hidden rounded-2xl border border-rule/80 bg-card shadow-md sm:h-[340px]">
-                  <Image
-                    src={IMAGES.polyhouse}
+                  <SafeImage
+                    src={(OBJECTIVES as any).sideImage || IMAGES.polyhouse}
                     alt="A field officer checking crop health data on a tablet inside a polyhouse"
                     fill
                     className="object-cover"
@@ -383,8 +409,9 @@ export default async function AboutPage() {
 
             <ScrollReveal delay={100}>
               <ul className="divide-y divide-rule border-y border-rule">
-                {OBJECTIVES.map((obj, i) => {
-                  const Icon = ICONS[obj.icon];
+                {((OBJECTIVES as any).items || OBJECTIVES).map((obj: any, i: number) => {
+                  const Icon = (ICONS as any)[obj.icon] || BadgeCheck;
+                  const iconMedia = obj.iconMedia;
                   return (
                     <li
                       key={obj.title}
@@ -394,8 +421,12 @@ export default async function AboutPage() {
                         {String(i + 1).padStart(2, "0")}
                       </span>
 
-                      <span className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-green/10 text-green transition-colors group-hover:bg-green group-hover:text-white">
-                        <Icon size={20} />
+                      <span className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-green/10 text-green transition-colors group-hover:bg-green group-hover:text-white overflow-hidden p-2">
+                        {iconMedia ? (
+                          <SafeImage src={iconMedia} alt={obj.title} width={22} height={22} className="object-contain" />
+                        ) : (
+                          <Icon size={20} />
+                        )}
                       </span>
 
                       <div>
@@ -420,9 +451,9 @@ export default async function AboutPage() {
         <Container>
           <ScrollReveal>
             <div className="max-w-2xl">
-              <span className="label text-green">Values</span>
+              <span className="label text-green">{(VALUES as any).tag || "Values"}</span>
               <h2 className="font-display mt-3 text-[clamp(1.75rem,3.4vw,2.6rem)] font-semibold leading-[1.12] tracking-tight text-ink">
-                Seven principles our members hold us to
+                {(VALUES as any).title || "Seven principles our members hold us to"}
               </h2>
             </div>
           </ScrollReveal>
@@ -431,8 +462,8 @@ export default async function AboutPage() {
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {/* Image tile, sized to sit in the grid as an eighth card */}
               <div className="relative min-h-[220px] overflow-hidden rounded-2xl border border-rule/80 shadow-sm sm:col-span-2 sm:row-span-2 sm:min-h-full">
-                <Image
-                  src={IMAGES.memberMeeting}
+                <SafeImage
+                  src={(VALUES as any).tileImage || IMAGES.memberMeeting}
                   alt="Members meeting a Society field officer under a banyan tree"
                   fill
                   className="object-cover"
@@ -442,21 +473,25 @@ export default async function AboutPage() {
                 <div className="absolute bottom-6 left-6 right-6 text-white">
                   <Handshake size={26} className="text-gold" aria-hidden />
                   <p className="font-display mt-3 max-w-[22ch] text-xl font-semibold leading-snug">
-                    Every member has one equal voice, and a share in what the
-                    Society earns.
+                    {(VALUES as any).tileText || "Every member has one equal voice, and a share in what the Society earns."}
                   </p>
                 </div>
               </div>
 
-              {VALUES.map((value) => {
-                const Icon = ICONS[value.icon];
+              {((VALUES as any).items || VALUES).map((value: any) => {
+                const Icon = (ICONS as any)[value.icon] || ShieldCheck;
+                const iconMedia = value.iconMedia;
                 return (
                   <div
                     key={value.title}
                     className="group rounded-2xl border border-rule/80 bg-card p-5 shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:border-green/50 hover:shadow-md"
                   >
-                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-green/10 text-green transition-colors group-hover:bg-green group-hover:text-white">
-                      <Icon size={17} />
+                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-green/10 text-green transition-colors group-hover:bg-green group-hover:text-white overflow-hidden p-1.5">
+                      {iconMedia ? (
+                        <SafeImage src={iconMedia} alt={value.title} width={18} height={18} className="object-contain" />
+                      ) : (
+                        <Icon size={17} />
+                      )}
                     </span>
                     <h3 className="font-display mt-3.5 text-[15px] font-semibold text-ink">
                       {value.title}
@@ -488,23 +523,27 @@ export default async function AboutPage() {
           </ScrollReveal>
 
           <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_1fr_0.95fr]">
-            {MEMBERSHIP.classes.map((cls, i) => (
+            {MEMBERSHIP.classes.map((cls: any, i: number) => (
               <ScrollReveal key={cls.name} delay={100 + i * 80}>
                 <div className="flex h-full flex-col rounded-2xl border border-rule/80 bg-card p-7 shadow-2xs transition-shadow duration-300 hover:shadow-md">
                   <div className="flex items-baseline justify-between gap-3">
                     <h3 className="font-display text-xl font-semibold text-ink">
                       {cls.name}
                     </h3>
-                    <span className="label text-ink-soft/70">{cls.tagline}</span>
+                    <span className="label text-ink-soft/70">
+                      {cls.tagline}
+                    </span>
                   </div>
 
                   <dl className="mt-6 space-y-0 border-t border-rule">
-                    {cls.rows.map((row) => (
+                    {cls.rows.map((row: any) => (
                       <div
                         key={row.label}
                         className="flex items-center justify-between gap-4 border-b border-rule/70 py-3"
                       >
-                        <dt className="text-[14px] text-ink-soft">{row.label}</dt>
+                        <dt className="text-[14px] text-ink-soft">
+                          {row.label}
+                        </dt>
                         <dd className="text-[14.5px] font-medium tabular-nums text-ink">
                           {row.value}
                         </dd>
@@ -527,8 +566,8 @@ export default async function AboutPage() {
             {/* Documents required, over the member-card photograph */}
             <ScrollReveal delay={260}>
               <div className="relative h-full min-h-[380px] overflow-hidden rounded-2xl border border-rule/80 shadow-sm">
-                <Image
-                  src="/hero_banner.jpg"
+                <SafeImage
+                  src={(MEMBERSHIP as any).documentsImage || "/hero_banner.jpg"}
                   alt=""
                   aria-hidden
                   fill
@@ -538,14 +577,21 @@ export default async function AboutPage() {
                 <div className="absolute inset-0 bg-green-deep/80 backdrop-blur-[2px]" />
 
                 <div className="relative flex h-full flex-col p-7 text-white">
-                  <span className="label text-gold">Documents required</span>
+                  <span className="label text-gold">{(MEMBERSHIP as any).documentsTag || "Documents required"}</span>
                   <ul className="mt-6 space-y-4">
-                    {MEMBERSHIP.documents.map((doc) => {
-                      const Icon = ICONS[doc.icon];
+                    {MEMBERSHIP.documents.map((doc: any) => {
+                      const Icon = (ICONS as any)[doc.icon] || FileText;
                       return (
-                        <li key={doc.label} className="flex items-center gap-3.5">
-                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/20 bg-white/10 text-gold">
-                            <Icon size={17} />
+                        <li
+                          key={doc.label}
+                          className="flex items-center gap-3.5"
+                        >
+                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/20 bg-white/10 text-gold overflow-hidden p-1.5">
+                            {doc.iconMedia ? (
+                              <SafeImage src={doc.iconMedia} alt={doc.label} width={18} height={18} className="object-contain" />
+                            ) : (
+                              <Icon size={17} />
+                            )}
                           </span>
                           <span className="text-[14.5px] font-medium">
                             {doc.label}
@@ -563,8 +609,8 @@ export default async function AboutPage() {
 
       {/* --------------------------------------------------------- Goals & CTA */}
       <section className="on-dark relative isolate overflow-hidden bg-green">
-        <Image
-          src={IMAGES.drone}
+        <SafeImage
+          src={(GOALS as any).bgImage || IMAGES.drone}
           alt=""
           aria-hidden
           fill
@@ -576,9 +622,9 @@ export default async function AboutPage() {
         <Container className="relative py-20 sm:py-24">
           <div className="grid gap-10 lg:grid-cols-[0.42fr_1fr] lg:gap-16">
             <div>
-              <span className="label text-gold">{GOALS.label}</span>
+              <span className="label text-gold">{(GOALS as any).label || (GOALS as any).tag || "Goals"}</span>
               <h2 className="font-display mt-3 max-w-[12ch] text-[clamp(1.75rem,3.4vw,2.6rem)] font-semibold leading-[1.12] tracking-tight text-white">
-                What we are working towards
+                {(GOALS as any).title || "What we are working towards"}
               </h2>
             </div>
 
@@ -588,12 +634,12 @@ export default async function AboutPage() {
               </p>
 
               <div className="mt-9 flex flex-wrap items-center gap-4">
-                <Button href="/#services" variant="onDark">
-                  Explore our services
+                <Button href={(GOALS as any).primaryCtaHref || "/#services"} variant="onDark">
+                  {(GOALS as any).primaryCtaLabel || "Explore our services"}
                   <ArrowRight size={15} />
                 </Button>
-                <Button href="/#contact" variant="outlineOnDark">
-                  Talk to the Society
+                <Button href={(GOALS as any).secondaryCtaHref || "/#contact"} variant="outlineOnDark">
+                  {(GOALS as any).secondaryCtaLabel || "Talk to the Society"}
                 </Button>
               </div>
             </div>

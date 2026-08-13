@@ -8,6 +8,10 @@
  * repository. Only the bcrypt hash reaches the database.
  */
 
+import dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
+dotenv.config({ path: ".env" });
+
 import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from "node:process";
 import bcrypt from "bcryptjs";

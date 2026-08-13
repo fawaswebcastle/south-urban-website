@@ -2,10 +2,10 @@
 
 import clsx from "clsx";
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { X } from "lucide-react";
 import { Container } from "./ui/Container";
 import { SectionHeading } from "./ui/SectionHeading";
+import { SafeImage } from "./ui/SafeImage";
 import { BOARD as BOARD_DEFAULT, MANAGEMENT as MANAGEMENT_DEFAULT } from "@/data/site";
 import type { Person } from "@/lib/content-types";
 
@@ -40,15 +40,15 @@ export function Leadership({
 
         <p className="label mt-12 text-ink-soft/70">Board of Directors</p>
         <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3">
-          {BOARD.map((p) => (
-            <PersonCard key={p.name} person={p} onOpen={setActive} />
+          {BOARD.map((p, i) => (
+            <PersonCard key={`${p.name}-board-${i}`} person={p} onOpen={setActive} />
           ))}
         </div>
 
         <p className="label mt-16 text-ink-soft/70">Executive Board</p>
         <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-4">
-          {MANAGEMENT.map((p) => (
-            <PersonCard key={p.name} person={p} onOpen={setActive} />
+          {MANAGEMENT.map((p, i) => (
+            <PersonCard key={`${p.name}-exec-${i}`} person={p} onOpen={setActive} />
           ))}
         </div>
       </Container>
@@ -65,7 +65,14 @@ export function Leadership({
             <div className="flex items-start justify-between gap-6">
               <div className="flex items-center gap-4">
                 <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-rule">
-                  <Image src={active.photo} alt={active.name} fill className="object-cover" sizes="56px" />
+                  <SafeImage
+                    src={active.photo}
+                    fallbackSrc="/sujan_mathew.jpg"
+                    alt={active.name}
+                    fill
+                    className="object-cover"
+                    sizes="56px"
+                  />
                 </div>
                 <div>
                   <h3 className="font-display text-[1.3rem] font-semibold leading-tight text-ink">
@@ -98,15 +105,14 @@ function PersonCard({
   onOpen: (p: Person) => void;
 }) {
   return (
-    // flex-col, because a stretched grid item that is a <button> otherwise
-    // centres its own contents, dropping short cards out of line with the row.
     <button
       onClick={() => onOpen(person)}
       className="group flex h-full w-full flex-col text-left focus:outline-none"
     >
       <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-paper-deep border border-rule/70 shadow-xs">
-        <Image
+        <SafeImage
           src={person.photo}
+          fallbackSrc="/sujan_mathew.jpg"
           alt={person.name}
           fill
           className={clsx(
@@ -127,5 +133,3 @@ function PersonCard({
     </button>
   );
 }
-
-

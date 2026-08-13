@@ -10,6 +10,7 @@ import { Contact } from "@/components/Contact";
 import {
   getContent,
   getGallery,
+  getGalleryCategories,
   getNotifications,
   getPeople,
   getPosts,
@@ -19,12 +20,13 @@ import {
 export default async function Home() {
   // Read once here and pass down, because most of these sections are client
   // components and cannot query the database themselves.
-  const [content, people, posts, services, gallery, notifications] = await Promise.all([
+  const [content, people, posts, services, gallery, galleryCategories, notifications] = await Promise.all([
     getContent(),
     getPeople(),
     getPosts(),
     getServices(),
     getGallery(),
+    getGalleryCategories(),
     getNotifications(),
   ]);
 
@@ -33,9 +35,9 @@ export default async function Home() {
       <Hero hero={content.hero} />
       <NoticeBar notifications={notifications} />
       <WhoWeAre whoWeAre={content.whoWeAre} facts={content.facts} images={content.images} />
-      <Services services={services} />
+      <Services services={services} whatWeOffer={content.whatWeOffer} />
       <Leadership board={people.board} management={people.management} />
-      <Gallery gallery={gallery} />
+      <Gallery gallery={gallery} categories={galleryCategories} />
       <Careers />
       <Blog posts={posts} />
       <Contact contact={content.contact} />

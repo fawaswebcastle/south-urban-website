@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { SafeImage } from "./ui/SafeImage";
 import clsx from "clsx";
 import { Container } from "./ui/Container";
 import { SectionHeading } from "./ui/SectionHeading";
@@ -21,10 +22,16 @@ const SPANS = [
 
 export function Gallery({
   gallery: GALLERY = GALLERY_DEFAULT,
+  categories,
 }: {
   gallery?: readonly GalleryItem[];
+  categories?: readonly { name: string; order?: number }[];
 } = {}) {
-  const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
+  const filters = categories && categories.length > 0
+    ? ["All", ...Array.from(new Set(categories.map((c) => c.name)))]
+    : ["All", "Events", "Operations"];
+
+  const [filter, setFilter] = useState<string>("All");
   const shown = GALLERY.filter((g) => filter === "All" || g.category === filter);
 
   return (
@@ -34,7 +41,7 @@ export function Gallery({
           <SectionHeading label="Our visual story" title="From the field." className="mb-0" />
 
           <div className="flex gap-2">
-            {FILTERS.map((f) => (
+            {filters.map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
@@ -60,8 +67,9 @@ export function Gallery({
                 SPANS[i % SPANS.length]
               )}
             >
-              <Image
+              <SafeImage
                 src={item.src}
+                fallbackSrc="/hero_banner.jpg"
                 alt={item.alt}
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"

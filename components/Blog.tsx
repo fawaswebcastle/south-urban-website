@@ -1,9 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Container } from "./ui/Container";
 import { SectionHeading } from "./ui/SectionHeading";
 import { Button } from "./ui/Button";
+import { SafeImage } from "./ui/SafeImage";
 import { POSTS as POSTS_DEFAULT } from "@/data/site";
 import type { Post } from "@/lib/content-types";
 
@@ -27,26 +27,29 @@ export function Blog({ posts: POSTS = POSTS_DEFAULT }: { posts?: readonly Post[]
 
         <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:gap-14">
           {/* Lead story */}
-          <Link href={`/blog/${lead.slug}`} className="group block">
-            <article>
-              <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-rule/70 bg-card shadow-xs">
-                <Image
-                  src={lead.image}
-                  alt={lead.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                  sizes="(min-width: 1024px) 620px, 100vw"
-                />
-              </div>
-              <p className="label mt-4 text-green">{lead.read}</p>
-              <h3 className="font-display mt-2 text-xl font-semibold leading-snug tracking-tight text-ink transition-colors group-hover:text-green sm:text-2xl">
-                {lead.title}
-              </h3>
-              <p className="mt-2.5 max-w-xl text-[14.5px] leading-relaxed text-ink-soft">
-                {lead.excerpt}
-              </p>
-            </article>
-          </Link>
+          {lead && (
+            <Link href={`/blog/${lead.slug}`} className="group block">
+              <article>
+                <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-rule/70 bg-card shadow-xs">
+                  <SafeImage
+                    src={lead.image}
+                    fallbackSrc="/blog_subsidy.jpg"
+                    alt={lead.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    sizes="(min-width: 1024px) 620px, 100vw"
+                  />
+                </div>
+                <p className="label mt-4 text-green">{lead.read}</p>
+                <h3 className="font-display mt-2 text-xl font-semibold leading-snug tracking-tight text-ink transition-colors group-hover:text-green sm:text-2xl">
+                  {lead.title}
+                </h3>
+                <p className="mt-2.5 max-w-xl text-[14.5px] leading-relaxed text-ink-soft">
+                  {lead.excerpt}
+                </p>
+              </article>
+            </Link>
+          )}
 
           {/* List stories */}
           <div className="border-t border-rule/80">
@@ -57,8 +60,9 @@ export function Blog({ posts: POSTS = POSTS_DEFAULT }: { posts?: readonly Post[]
                 className="group flex items-start gap-4 border-b border-rule/70 py-5"
               >
                 <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-lg border border-rule/70 bg-card sm:h-22 sm:w-28">
-                  <Image
+                  <SafeImage
                     src={post.image}
+                    fallbackSrc="/blog_harvest.jpg"
                     alt={post.title}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
@@ -86,4 +90,3 @@ export function Blog({ posts: POSTS = POSTS_DEFAULT }: { posts?: readonly Post[]
     </section>
   );
 }
-

@@ -22,6 +22,7 @@ export function Button({
   variant = "solid",
   className,
   type = "button",
+  disabled,
 }: {
   children: ReactNode;
   href?: string;
@@ -29,22 +30,24 @@ export function Button({
   variant?: Variant;
   className?: string;
   type?: "button" | "submit";
+  disabled?: boolean;
 }) {
   const classes = clsx(
     "inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-[13.5px] font-medium tracking-tight transition-all duration-200 shadow-xs",
+    disabled && "pointer-events-none opacity-60",
     styles[variant],
     className
   );
 
   if (href) {
     return (
-      <Link href={href} className={classes}>
+      <Link href={href} className={classes} aria-disabled={disabled}>
         {children}
       </Link>
     );
   }
   return (
-    <button type={type} onClick={onClick} className={classes}>
+    <button type={type} onClick={onClick} disabled={disabled} className={classes}>
       {children}
     </button>
   );

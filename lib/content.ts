@@ -1,191 +1,535 @@
 /**
- * Reads published content for the public site.
+ * Reads published content for the public site from the clean Strapi 5 Headless CMS backend
+ * (http://127.0.0.1:1337).
  *
- * Every getter falls back to the matching export in `data/site.ts` when the
- * database has no row, is empty, or is unreachable. That is deliberate:
- *
- *  - the site renders correctly before anyone has run a migration or seeded,
- *  - a database outage degrades to the last-known-good copy in the repo rather
- *    than to a 500,
- *  - and `data/site.ts` stays meaningful as the checked-in default, so a
- *    reviewer can still read the site's copy in the diff.
- *
- * Server components only — importing this from a client component will pull
- * Prisma into the browser bundle.
+ * Every getter falls back seamlessly to the matching export in `data/site.ts` when the
+ * Strapi backend entry is missing, empty, or unreachable.
  */
 
 import "server-only";
-import { unstable_cache } from "next/cache";
-import { getPrisma, hasDatabase } from "./db";
 import * as defaults from "@/data/site";
+import { fetchStrapi, getStrapiMediaUrl } from "./strapi";
+import type {
+  Post,
+  Service,
+  Notification,
+  GalleryItem,
+} from "./content-types";
 
 export const CONTENT_TAG = "content";
 
-type Json = Record<string, unknown>;
-
-/** Swallows database errors so the public site falls back instead of failing. */
-async function safe<T>(run: () => Promise<T>, fallback: T, label: string): Promise<T> {
-  if (!hasDatabase) return fallback;
+/** Helper to wrap async getters with fallback to default values on failure or empty response */
+async function safe<T>(run: () => Promise<T | null | undefined>, fallback: T, label: string): Promise<T> {
   try {
-    return await run();
+    const result = await run();
+    if (result === null || result === undefined) return fallback;
+    if (Array.isArray(result) && result.length === 0) return fallback;
+    return result;
   } catch (error) {
     console.error(`[content] ${label} fell back to data/site.ts:`, error);
     return fallback;
   }
 }
 
-/** One round trip for all singleton blocks; cached until a save revalidates. */
-const loadSections = unstable_cache(
-  async (): Promise<Record<string, Json>> => {
-    const rows = await getPrisma().section.findMany();
-    return Object.fromEntries(rows.map((r) => [r.key, r.data as Json]));
-  },
-  ["sections"],
-  { tags: [CONTENT_TAG] }
-);
-
-async function sections(): Promise<Record<string, Json>> {
-  return safe(() => loadSections(), {}, "sections");
-}
-
-/**
- * A stored section merged over its static default, so a record written before a
- * new field existed does not blank that field out.
- */
-function merge<T>(stored: Json | undefined, fallback: T): T {
-  if (!stored) return fallback;
-  if (Array.isArray(fallback)) return (stored.items as T) ?? fallback;
-  return { ...(fallback as object), ...stored } as T;
-}
-
 export async function getContent() {
-  const s = await sections();
+  const [
+    heroRes,
+    whoWeAreRes,
+    noticeRes,
+    contactRes,
+    companyRes,
+    overviewRes,
+    visionRes,
+    missionRes,
+    objectivesRes,
+    goalsRes,
+    valuesRes,
+    membershipRes,
+    activitiesRes,
+    blogIntroRes,
+    brandingRes,
+    whatWeOfferRes,
+    headerRes,
+    footerRes,
+  ] = await Promise.all([
+    fetchStrapi<any>("/hero?populate=*"),
+    fetchStrapi<any>("/who-we-are?populate=*"),
+    fetchStrapi<any>("/notice?populate=*"),
+    fetchStrapi<any>("/contact?populate=*"),
+    fetchStrapi<any>("/company-details?populate=*"),
+    fetchStrapi<any>("/overview?populate=*"),
+    fetchStrapi<any>("/vision?populate=*"),
+    fetchStrapi<any>("/mission?populate=*"),
+    fetchStrapi<any>("/objectives?populate=*"),
+    fetchStrapi<any>("/goals?populate=*"),
+    fetchStrapi<any>("/values?populate=*"),
+    fetchStrapi<any>("/membership?populate[classes][populate]=*&populate[documents][populate]=*"),
+    fetchStrapi<any>("/coop-activities?populate=*"),
+    fetchStrapi<any>("/blog-intro?populate=*"),
+    fetchStrapi<any>("/branding?populate=*"),
+    fetchStrapi<any>("/what-we-offer?populate=*"),
+    fetchStrapi<any>("/header?populate=*"),
+    fetchStrapi<any>("/footer?populate=*"),
+  ]);
+
+  const hero = {
+    ...defaults.HERO,
+    title: heroRes?.title || defaults.HERO.title,
+    intro: heroRes?.subtitle || defaults.HERO.intro,
+    badge: heroRes?.badge,
+    actionText: heroRes?.actionText,
+    actionUrl: heroRes?.actionUrl,
+    banner: {
+      ...defaults.HERO.banner,
+      main: {
+        ...defaults.HERO.banner.main,
+        src: getStrapiMediaUrl(heroRes?.bgImage?.url) || defaults.HERO.banner.main.src,
+      },
+    },
+  };
+
+  const whoWeAre = {
+    ...defaults.WHO_WE_ARE,
+    tag: whoWeAreRes?.tag || defaults.WHO_WE_ARE.label,
+    label: whoWeAreRes?.tag || defaults.WHO_WE_ARE.label,
+    title: whoWeAreRes?.title || defaults.WHO_WE_ARE.title,
+    lead: whoWeAreRes?.description1 || defaults.WHO_WE_ARE.lead,
+    body: [
+      whoWeAreRes?.description1 || defaults.WHO_WE_ARE.body[0],
+      whoWeAreRes?.description2 || defaults.WHO_WE_ARE.body[1],
+    ],
+    regBadgeText: whoWeAreRes?.regBadgeText || "MSCS Reg: MSCS/CR/1664/2026",
+    cardTitle: whoWeAreRes?.cardTitle || "South Urban Agro Co-op",
+    cardSubtitle: whoWeAreRes?.cardSubtitle || "Serving Kerala & Tamil Nadu",
+    bannerImage: getStrapiMediaUrl(whoWeAreRes?.bannerImage?.url) || "/who_we_are_banner.png",
+    tabs: Array.isArray(whoWeAreRes?.tabs) && whoWeAreRes.tabs.length > 0
+      ? whoWeAreRes.tabs.map((t: any) => ({
+          id: t.tabId || t.id || t.label.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+          label: t.label,
+          title: t.title,
+          body: t.body,
+        }))
+      : undefined,
+    pillars: Array.isArray(whoWeAreRes?.pillars) && whoWeAreRes.pillars.length > 0
+      ? whoWeAreRes.pillars.map((p: any) => ({
+          icon: p.icon || "Sprout",
+          title: p.title,
+          desc: p.desc,
+        }))
+      : undefined,
+  };
+
+  const contact = {
+    ...defaults.CONTACT,
+    tag: contactRes?.tag || "Contact us",
+    title: contactRes?.title || "Have a question, enquiry, or partnership proposal?",
+    description: contactRes?.description || "We'd love to hear from you.",
+    phone: contactRes?.phone || defaults.CONTACT.phone,
+    email: contactRes?.email || defaults.CONTACT.email,
+    address: contactRes?.address || defaults.CONTACT.address,
+    newsletterTitle: contactRes?.newsletterTitle || "Stay in the loop",
+    newsletterSubtitle: contactRes?.newsletterSubtitle || "Subscribe for news, updates, and offers from South Urban.",
+  };
+
+  const notice = {
+    ...defaults.NOTICE,
+    title: noticeRes?.text || defaults.NOTICE.title,
+    text: noticeRes?.text || defaults.NOTICE.title,
+    categories: noticeRes?.categories || defaults.NOTICE.categories,
+  };
+
+  const companyDetails = {
+    ...defaults.COMPANY_DETAILS,
+    tag: companyRes?.tag || "Company details",
+    title: companyRes?.title || "Constituted under the MSCS Act, 2002",
+    intro: companyRes?.intro || defaults.COMPANY_DETAILS.intro,
+    bannerTitle: companyRes?.bannerTitle || "One membership, two states",
+    bannerSubtitle: companyRes?.bannerSubtitle || "Kerala and Tamil Nadu, on a single Society record.",
+    bannerImage: companyRes?.bannerImage?.url ? getStrapiMediaUrl(companyRes.bannerImage.url) : defaults.IMAGES.whoWeAreBanner,
+    rows: Array.isArray(companyRes?.rows) && companyRes.rows.length > 0 ? companyRes.rows : defaults.COMPANY_DETAILS.rows,
+    regNo: companyRes?.regNo || defaults.COMPANY_DETAILS.regNo,
+    subtitle: companyRes?.subtitle || defaults.COMPANY_DETAILS.subtitle,
+    address: companyRes?.address || defaults.COMPANY_DETAILS.address,
+    phone: companyRes?.phone || defaults.CONTACT.phone,
+    email: companyRes?.email || defaults.CONTACT.email,
+    gst: companyRes?.gst || defaults.COMPANY_DETAILS.gst,
+    mapUrl: companyRes?.mapUrl || defaults.COMPANY_DETAILS.mapUrl,
+    acts: companyRes?.acts || defaults.COMPANY_DETAILS.acts,
+    bullets: companyRes?.bullets || defaults.COMPANY_DETAILS.bullets,
+  };
+
+  const overview = {
+    ...defaults.OVERVIEW,
+    label: overviewRes?.tag || defaults.OVERVIEW.label,
+    tag: overviewRes?.tag || defaults.OVERVIEW.label,
+    title: overviewRes?.title || defaults.OVERVIEW.title,
+    lead: overviewRes?.intro || defaults.OVERVIEW.lead,
+    body: overviewRes?.paragraphs || defaults.OVERVIEW.body,
+    mainImage: overviewRes?.mainImage?.url ? getStrapiMediaUrl(overviewRes.mainImage.url) : defaults.IMAGES.harvest,
+    floatingCardTitle: overviewRes?.floatingCardTitle || "Incorporated under Central Registrar",
+    floatingCardSubtitle: overviewRes?.floatingCardSubtitle || "New Delhi, Ministry of Cooperation.",
+  };
+
+  const vision = {
+    ...defaults.VISION,
+    tag: visionRes?.tag || visionRes?.title || defaults.VISION.label || "Vision",
+    label: visionRes?.tag || visionRes?.title || defaults.VISION.label || "Vision",
+    title: visionRes?.title || defaults.VISION.label || "Vision",
+    statement: visionRes?.statement || defaults.VISION.statement,
+    bgImage: visionRes?.bgImage?.url ? getStrapiMediaUrl(visionRes.bgImage.url) : defaults.IMAGES.drone,
+  };
+
+  const mission = {
+    ...defaults.MISSION,
+    label: missionRes?.label || missionRes?.tag || defaults.MISSION.label,
+    tag: missionRes?.tag || missionRes?.label || defaults.MISSION.label,
+    title: missionRes?.title || defaults.MISSION.label,
+    lead: missionRes?.lead || missionRes?.statement || defaults.MISSION.lead,
+    items: Array.isArray(missionRes?.items) && missionRes.items.length > 0
+      ? missionRes.items.map((item: any) => ({
+          focus: item.focus || item.title || "Mission",
+          text: item.text || item.desc || item.statement || "",
+        }))
+      : defaults.MISSION.items,
+  };
+
+  const objectives = {
+    tag: objectivesRes?.tag || "Objectives",
+    title: objectivesRes?.title || "Four commitments that shape the working day",
+    sideImage: objectivesRes?.sideImage?.url ? getStrapiMediaUrl(objectivesRes.sideImage.url) : defaults.IMAGES.polyhouse,
+    items: Array.isArray(objectivesRes?.items) && objectivesRes.items.length > 0
+      ? objectivesRes.items.map((item: any, i: number) => {
+          const defaultIcons = ["BadgeCheck", "HandCoins", "ShieldCheck", "TrendingUp"];
+          const iconMediaUrl = getStrapiMediaUrl(item.iconMedia?.url);
+          return {
+            icon: item.icon || defaultIcons[i % defaultIcons.length] || "BadgeCheck",
+            iconMedia: iconMediaUrl || undefined,
+            title: item.title || "",
+            desc: item.desc || "",
+          };
+        })
+      : defaults.OBJECTIVES,
+  };
+
+  const goals = {
+    ...defaults.GOALS,
+    label: goalsRes?.label || goalsRes?.tag || defaults.GOALS.label,
+    tag: goalsRes?.tag || goalsRes?.label || defaults.GOALS.label,
+    title: goalsRes?.title || "What we are working towards",
+    statement: goalsRes?.statement || goalsRes?.intro || defaults.GOALS.statement,
+    bgImage: goalsRes?.bgImage?.url ? getStrapiMediaUrl(goalsRes.bgImage.url) : defaults.IMAGES.drone,
+    primaryCtaLabel: goalsRes?.primaryCtaLabel || "Explore our services",
+    primaryCtaHref: goalsRes?.primaryCtaHref || "/#services",
+    secondaryCtaLabel: goalsRes?.secondaryCtaLabel || "Talk to the Society",
+    secondaryCtaHref: goalsRes?.secondaryCtaHref || "/#contact",
+  };
+
+  const values = {
+    tag: valuesRes?.tag || "Values",
+    title: valuesRes?.title || "Seven principles our members hold us to",
+    intro: valuesRes?.intro || "Guided by ethical principles in every decision.",
+    tileText: valuesRes?.tileText || "Every member has one equal voice, and a share in what the Society earns.",
+    tileImage: valuesRes?.tileImage?.url ? getStrapiMediaUrl(valuesRes.tileImage.url) : defaults.IMAGES.memberMeeting,
+    items: Array.isArray(valuesRes?.items) && valuesRes.items.length > 0
+      ? valuesRes.items.map((item: any, i: number) => {
+          const defaultIcons = ["Eye", "Users2", "ShieldCheck", "Gem", "Lightbulb", "Handshake", "Leaf"];
+          const iconMediaUrl = getStrapiMediaUrl(item.iconMedia?.url);
+          return {
+            icon: item.icon || defaultIcons[i % defaultIcons.length] || "ShieldCheck",
+            iconMedia: iconMediaUrl || undefined,
+            title: item.title || "",
+            desc: item.desc || "",
+          };
+        })
+      : defaults.VALUES,
+  };
+
+  const membership = {
+    ...defaults.MEMBERSHIP,
+    label: membershipRes?.label || membershipRes?.tag || defaults.MEMBERSHIP.label,
+    tag: membershipRes?.tag || membershipRes?.label || defaults.MEMBERSHIP.label,
+    title: membershipRes?.title || defaults.MEMBERSHIP.title,
+    intro: membershipRes?.intro || defaults.MEMBERSHIP.intro,
+    classes: Array.isArray(membershipRes?.classes) && membershipRes.classes.length > 0
+      ? membershipRes.classes.map((cls: any, i: number) => {
+          const fallbackClass = defaults.MEMBERSHIP.classes[i] || defaults.MEMBERSHIP.classes[0];
+          return {
+            name: cls.name || fallbackClass.name,
+            tagline: cls.tagline || fallbackClass.tagline,
+            total: cls.total || fallbackClass.total,
+            totalLabel: cls.totalLabel || fallbackClass.totalLabel,
+            rows: Array.isArray(cls.rows) && cls.rows.length > 0
+              ? cls.rows.map((r: any) => ({ label: r.label || "", value: r.value || "" }))
+              : fallbackClass.rows,
+          };
+        })
+      : defaults.MEMBERSHIP.classes,
+    documentsTag: membershipRes?.documentsTag || "Documents required",
+    documentsImage: membershipRes?.documentsImage?.url ? getStrapiMediaUrl(membershipRes.documentsImage.url) : "/hero_banner.jpg",
+    documents: Array.isArray(membershipRes?.documents) && membershipRes.documents.length > 0
+      ? membershipRes.documents.map((doc: any) => ({
+          icon: doc.icon || "FileText",
+          iconMedia: doc.iconMedia?.url ? getStrapiMediaUrl(doc.iconMedia.url) : undefined,
+          label: doc.label || "",
+        }))
+      : defaults.MEMBERSHIP.documents,
+  };
+
+  const coopActivities = {
+    tag: activitiesRes?.tag || "Activities",
+    title: activitiesRes?.title || "What the Society puts its resources behind",
+    items: Array.isArray(activitiesRes?.items) && activitiesRes.items.length > 0
+      ? activitiesRes.items.map((item: any, i: number) => {
+          const defaultIcons = ["Sprout", "ShoppingBasket", "Warehouse", "PackageCheck", "Milk", "HandCoins"];
+          const iconMediaUrl = getStrapiMediaUrl(item.iconMedia?.url);
+          return {
+            icon: item.icon || defaultIcons[i % defaultIcons.length] || "Sprout",
+            iconMedia: iconMediaUrl || undefined,
+            title: item.title || "",
+            desc: item.desc || "",
+          };
+        })
+      : defaults.COOP_ACTIVITIES,
+  };
+
+  const blogIntro = {
+    ...defaults.BLOG,
+    label: blogIntroRes?.label || defaults.BLOG.label,
+    title: blogIntroRes?.title || defaults.BLOG.title,
+    intro: blogIntroRes?.intro || defaults.BLOG.intro,
+  };
+
+  const socials = Array.isArray(headerRes?.socials) && headerRes.socials.length > 0
+    ? headerRes.socials.map((s: any) => ({ name: s.platform || s.name, href: s.url || s.href }))
+    : defaults.SOCIALS;
+  const navLinks = Array.isArray(headerRes?.navItems) && headerRes.navItems.length > 0
+    ? headerRes.navItems.map((n: any) => ({ label: n.label, href: n.href }))
+    : defaults.NAV_LINKS;
+  const branding = {
+    logo: brandingRes?.logo?.url ? getStrapiMediaUrl(brandingRes.logo.url) : defaults.IMAGES.logo,
+  };
+
+  const whatWeOffer = {
+    tag: whatWeOfferRes?.tag || "WHAT WE OFFER",
+    title: whatWeOfferRes?.title || "Twelve services, across the whole agricultural value chain.",
+    description: whatWeOfferRes?.description || "Each opens as you scroll — or select any line to jump to it.",
+    image: getStrapiMediaUrl(whatWeOfferRes?.image?.url) || "",
+    items: Array.isArray(whatWeOfferRes?.items) && whatWeOfferRes.items.length > 0
+      ? whatWeOfferRes.items.map((i: any) => ({
+          title: i.title,
+          summary: i.summary,
+          body: i.body,
+        }))
+      : defaults.SERVICES,
+  };
+
+  const header = {
+    phone: headerRes?.phone || contactRes?.phone || defaults.CONTACT.phone,
+    contactBtnLabel: headerRes?.contactBtnLabel || "Contact Us",
+    contactBtnHref: headerRes?.contactBtnHref || "#contact",
+    logo: getStrapiMediaUrl(headerRes?.logo?.url) || brandingRes?.logo?.url ? getStrapiMediaUrl(brandingRes.logo.url) : defaults.IMAGES.logo,
+    navItems: Array.isArray(headerRes?.navItems) && headerRes.navItems.length > 0
+      ? headerRes.navItems.map((n: any) => ({ label: n.label, href: n.href }))
+      : defaults.NAV_LINKS,
+    socials: Array.isArray(headerRes?.socials) && headerRes.socials.length > 0
+      ? headerRes.socials.map((s: any) => ({ name: s.platform, href: s.url }))
+      : socials,
+  };
+
+  const footer = {
+    description: footerRes?.description || "Empowering agricultural communities through cooperative principles, sustainable practices, and market-driven solutions since 2009.",
+    regText: footerRes?.regText || "Reg. MSCS/CR/1664/2026",
+    areaText: footerRes?.areaText || "Area of operation: Kerala, Tamil Nadu",
+    quickLinksTitle: footerRes?.quickLinksTitle || "QUICK LINKS",
+    quickLinks: Array.isArray(footerRes?.quickLinks) && footerRes.quickLinks.length > 0
+      ? footerRes.quickLinks.map((n: any) => ({ label: n.label, href: n.href }))
+      : defaults.NAV_LINKS,
+    contactTitle: footerRes?.contactTitle || "GET IN TOUCH",
+    phone: footerRes?.phone || contactRes?.phone || defaults.CONTACT.phone,
+    email: footerRes?.email || contactRes?.email || defaults.CONTACT.email,
+    address: footerRes?.address || companyRes?.address || defaults.COMPANY_DETAILS.rows[2].value,
+    copyright: footerRes?.copyright || `Copyright © ${new Date().getFullYear()} South Urban. All rights reserved.`,
+    actText: footerRes?.actText || "Registered under the Multi State Cooperative Societies Act, 2002",
+  };
+
   return {
-    hero: merge(s.hero, defaults.HERO),
-    notice: merge(s.notice, defaults.NOTICE),
-    whoWeAre: merge(s.whoWeAre, defaults.WHO_WE_ARE),
-    facts: merge(s.facts, defaults.FACTS as unknown as typeof defaults.FACTS),
-    overview: merge(s.overview, defaults.OVERVIEW),
-    coopPrinciples: merge(s.coopPrinciples, defaults.COOP_PRINCIPLES),
-    coopActivities: merge(s.coopActivities, defaults.COOP_ACTIVITIES),
-    companyDetails: merge(s.companyDetails, defaults.COMPANY_DETAILS),
-    vision: merge(s.vision, defaults.VISION),
-    mission: merge(s.mission, defaults.MISSION),
-    objectives: merge(s.objectives, defaults.OBJECTIVES),
-    goals: merge(s.goals, defaults.GOALS),
-    values: merge(s.values, defaults.VALUES),
-    membership: merge(s.membership, defaults.MEMBERSHIP),
-    blogIntro: merge(s.blogIntro, defaults.BLOG),
-    job: merge(s.job, defaults.JOB),
-    contact: merge(s.contact, defaults.CONTACT),
-    socials: merge(s.socials, defaults.SOCIALS),
-    navLinks: merge(s.navLinks, defaults.NAV_LINKS),
-    images: merge(s.aboutImages, defaults.IMAGES),
-    branding: merge(s.branding, { logo: "/logo_official.png" }),
+    hero,
+    whoWeAre,
+    notice,
+    header,
+    footer,
+    facts: Array.isArray(whoWeAreRes?.facts) && whoWeAreRes.facts.length > 0
+      ? whoWeAreRes.facts.map((f: any) => ({
+          value: f.value,
+          label: f.label,
+        }))
+      : (defaults.FACTS as unknown as typeof defaults.FACTS),
+    overview,
+    coopPrinciples: defaults.COOP_PRINCIPLES,
+    coopActivities,
+    companyDetails,
+    vision,
+    mission,
+    objectives,
+    goals,
+    values,
+    membership,
+    blogIntro,
+    whatWeOffer,
+    job: defaults.JOB,
+    contact,
+    socials,
+    navLinks,
+    images: defaults.IMAGES,
+    branding,
   };
 }
 
 export type SiteContent = Awaited<ReturnType<typeof getContent>>;
 
-// ------------------------------------------------------------- collections
-
-const loadPeople = unstable_cache(
-  async () => getPrisma().person.findMany({ where: { published: true }, orderBy: { order: "asc" } }),
-  ["people"],
-  { tags: [CONTENT_TAG] }
-);
+// ------------------------------------------------------------- Collections
 
 export async function getPeople() {
-  const rows = await safe(() => loadPeople(), [], "people");
-  if (rows.length === 0) {
-    return { board: defaults.BOARD, management: defaults.MANAGEMENT };
-  }
-  const shape = (r: (typeof rows)[number]) => ({
-    name: r.name,
-    role: r.role,
-    photo: r.photo ?? "",
-    photoPosition: r.photoPosition ?? undefined,
-    teaser: r.teaser,
-    bio: r.bio,
-  });
-  return {
-    board: rows.filter((r) => r.group === "board").map(shape),
-    management: rows.filter((r) => r.group === "management").map(shape),
-  };
-}
+  return safe(
+    async () => {
+      const list = await fetchStrapi<any[]>("/people?populate=*");
+      if (!list || list.length === 0) return null;
 
-const loadPosts = unstable_cache(
-  async () => getPrisma().post.findMany({ where: { published: true }, orderBy: { date: "desc" } }),
-  ["posts"],
-  { tags: [CONTENT_TAG] }
-);
+      const board: Array<typeof defaults.BOARD[number]> = [];
+      const management: Array<typeof defaults.MANAGEMENT[number]> = [];
+
+      const allDefaults = [...defaults.BOARD, ...defaults.MANAGEMENT];
+
+      for (const p of list) {
+        const matched = allDefaults.find(
+          (d) => d.name.toLowerCase() === p.name?.toLowerCase()
+        );
+
+        const photoUrl =
+          getStrapiMediaUrl(p.photo?.url) ||
+          (typeof p.photo === "string" ? p.photo : "") ||
+          matched?.photo ||
+          "/sujan_mathew.jpg";
+
+        const item = {
+          name: p.name,
+          role: p.role,
+          photo: photoUrl,
+          photoPosition: p.photoPosition || matched?.photoPosition || undefined,
+          teaser: p.teaser || matched?.teaser || "",
+          bio: p.bio || matched?.bio || "",
+        };
+        if (p.group === "board") board.push(item);
+        else management.push(item);
+      }
+
+      if (board.length === 0 && management.length === 0) return null;
+      return {
+        board: board.length > 0 ? board : defaults.BOARD,
+        management: management.length > 0 ? management : defaults.MANAGEMENT,
+      };
+    },
+    { board: defaults.BOARD, management: defaults.MANAGEMENT },
+    "people"
+  );
+}
 
 export async function getPosts() {
-  const rows = await safe(() => loadPosts(), [], "posts");
-  if (rows.length === 0) return defaults.POSTS;
-  return rows.map((r) => {
-    // `unstable_cache` serialises what it stores, so a cached hit returns the
-    // timestamp as an ISO string rather than the Date Prisma handed back.
-    const date = r.date instanceof Date ? r.date : new Date(r.date);
-    return {
-      slug: r.slug,
-      title: r.title,
-      excerpt: r.excerpt,
-      read: r.readTime,
-      image: r.image ?? "",
-      date: date.toISOString().slice(0, 10),
-      dateLabel: date.toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-        timeZone: "UTC",
-      }),
-      category: r.category,
-      author: r.author,
-      body: r.body as unknown as (typeof defaults.POSTS)[number]["body"],
-    };
-  });
-}
+  return safe(
+    async () => {
+      const list = await fetchStrapi<any[]>("/posts?populate=*");
+      if (!list || list.length === 0) return null;
 
-const loadServices = unstable_cache(
-  async () => getPrisma().service.findMany({ where: { published: true }, orderBy: { order: "asc" } }),
-  ["services"],
-  { tags: [CONTENT_TAG] }
-);
+      return list.map((p: any) => ({
+        slug: p.slug || p.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+        title: p.title,
+        excerpt: p.excerpt || "",
+        read: p.readTime || "3 min read",
+        image: getStrapiMediaUrl(p.image?.url) || p.image || "",
+        date: p.date || new Date().toISOString().slice(0, 10),
+        dateLabel: p.date || "13 August 2026",
+        category: p.category || "General",
+        author: p.author || "South Urban Team",
+        body: p.body || [{ kind: "paragraph", text: p.excerpt || "" }],
+      }));
+    },
+    defaults.POSTS as unknown as Post[],
+    "posts"
+  );
+}
 
 export async function getServices() {
-  const rows = await safe(() => loadServices(), [], "services");
-  if (rows.length === 0) return defaults.SERVICES;
-  return rows.map((r) => ({ title: r.title, summary: r.summary, body: r.body }));
-}
+  return safe(
+    async () => {
+      const list = await fetchStrapi<any[]>("/services?populate=*");
+      if (!list || list.length === 0) return null;
 
-const loadNotifications = unstable_cache(
-  async () => getPrisma().notification.findMany({ where: { published: true }, orderBy: { order: "asc" } }),
-  ["notifications"],
-  { tags: [CONTENT_TAG] }
-);
+      return list.map((s: any) => ({
+        title: s.title,
+        summary: s.summary,
+        body: s.body,
+      }));
+    },
+    defaults.SERVICES as unknown as Service[],
+    "services"
+  );
+}
 
 export async function getNotifications() {
-  const rows = await safe(() => loadNotifications(), [], "notifications");
-  if (rows.length === 0) return defaults.NOTIFICATIONS;
-  return rows.map((r) => ({
-    id: r.id,
-    title: r.title,
-    date: r.date,
-    category: r.category,
-    summary: r.summary,
-    hasDownload: r.hasDownload,
-  }));
+  return safe(
+    async () => {
+      const list = await fetchStrapi<any[]>("/notifications?populate=*");
+      if (!list || list.length === 0) return null;
+
+      return list.map((n: any) => ({
+        id: String(n.id || n.documentId),
+        title: n.title,
+        date: n.date,
+        category: n.category || "Announcement",
+        summary: n.summary || "",
+        hasDownload: Boolean(n.hasDownload),
+      }));
+    },
+    defaults.NOTIFICATIONS as unknown as Notification[],
+    "notifications"
+  );
 }
 
-const loadGallery = unstable_cache(
-  async () => getPrisma().galleryItem.findMany({ where: { published: true }, orderBy: { order: "asc" } }),
-  ["gallery"],
-  { tags: [CONTENT_TAG] }
-);
-
 export async function getGallery() {
-  const rows = await safe(() => loadGallery(), [], "gallery");
-  if (rows.length === 0) return defaults.GALLERY;
-  return rows.map((r) => ({ src: r.src, alt: r.alt, category: r.category }));
+  return safe(
+    async () => {
+      const list = await fetchStrapi<any[]>("/gallery-items?populate=*");
+      if (!list || list.length === 0) return null;
+
+      return list.map((g: any, index: number) => {
+        const fallback = defaults.GALLERY[index % defaults.GALLERY.length];
+        return {
+          src: getStrapiMediaUrl(g.src?.url) || (g.src && typeof g.src === "string" ? g.src : "") || fallback?.src || "",
+          alt: g.alt || fallback?.alt || "Gallery Image",
+          category: g.gallery_category?.name || g.category || fallback?.category || "Operations",
+        };
+      });
+    },
+    defaults.GALLERY as unknown as GalleryItem[],
+    "gallery"
+  );
+}
+
+export async function getGalleryCategories() {
+  return safe(
+    async () => {
+      const list = await fetchStrapi<any[]>("/gallery-categories?populate=*");
+      if (!list || list.length === 0) return null;
+
+      return list.map((c: any) => ({
+        name: c.name,
+        order: c.order ?? 0,
+      }));
+    },
+    [
+      { name: "Operations", order: 1 },
+      { name: "Events", order: 2 },
+    ],
+    "gallery-categories"
+  );
 }

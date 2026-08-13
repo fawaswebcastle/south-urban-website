@@ -23,16 +23,19 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
   return (
     <>
       <Nav
-        navLinks={content.navLinks}
-        contact={content.contact}
-        socials={content.socials}
+        header={content.header}
+        navLinks={content.header?.navItems || content.navLinks}
+        contact={content.header?.phone ? { ...content.contact, phone: content.header.phone } : content.contact}
+        socials={content.header?.socials || content.socials}
         board={people.board}
         posts={posts}
         services={services}
+        whoWeAre={content.whoWeAre}
       />
       <div className="flex-1">{children}</div>
       <Footer
-        navLinks={content.navLinks}
+        footer={content.footer}
+        navLinks={content.footer?.quickLinks || content.navLinks}
         contact={content.contact}
         companyDetails={content.companyDetails}
       />
