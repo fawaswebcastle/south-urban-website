@@ -1,26 +1,97 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Premium Apple-inspired neutral palette & restrained brand accents */
+  --su-paper: #faf9f6;
+  --su-paper-deep: #f2f0ea;
+  --su-card: #ffffff;
+  --su-ink: #111827;
+  --su-ink-soft: #52525b;
+  --su-ink-muted: #71717a;
+  --su-green: #116936;
+  --su-green-deep: #0b4724;
+  --su-gold: #c99c27;
+  --su-sage: #7a8f73;
+  --su-rule: #e4e4e7;
+
+  /* Header height variable */
+  --su-header: 110px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: var(--su-paper);
+  --color-paper-deep: var(--su-paper-deep);
+  --color-card: var(--su-card);
+  --color-ink: var(--su-ink);
+  --color-ink-soft: var(--su-ink-soft);
+  --color-ink-muted: var(--su-ink-muted);
+  --color-green: var(--su-green);
+  --color-green-deep: var(--su-green-deep);
+  --color-gold: var(--su-gold);
+  --color-sage: var(--su-sage);
+  --color-rule: var(--su-rule);
+
+  --font-display: var(--font-fraunces), -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+
+  --animate-marquee: marquee 40s linear infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--su-paper);
+  color: var(--su-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+::selection {
+  background: var(--su-green);
+  color: #ffffff;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Small caps label - subtle, precise typography */
+.label {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--su-green);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.on-dark *:focus-visible {
+  outline-color: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+

@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# The template is safe to commit; the filled-in .env.local is not.
+!.env.example
+
+# Local PGlite dev database
+.pglite/
+
+# Machine-local Claude Code settings; launch.json is shared and stays tracked.
+.claude/settings.local.json
