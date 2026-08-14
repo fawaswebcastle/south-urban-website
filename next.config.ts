@@ -16,10 +16,18 @@ const nextConfig: NextConfig = {
      * lift the check but weakens SSRF protection in production.
      */
     remotePatterns: [
-      { protocol: "https", hostname: "south-indian-urban-backend.wc-1.previewbay.com" },
+      {
+        protocol: "https",
+        hostname: "south-indian-urban-backend.wc-1.previewbay.com",
+      },
       { protocol: "http", hostname: "127.0.0.1", port: "1337" },
       { protocol: "http", hostname: "localhost", port: "1337" },
       { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "south-urban-cms.wc-1.previewbay.com" },
+      {
+        protocol: "https",
+        hostname: "south-urban-dashboard.wc-1.previewbay.com",
+      },
       // Vercel Blob, where the admin stores uploaded images. Every store gets
       // its own <id>.public.blob.vercel-storage.com host, hence the wildcard.
       { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
