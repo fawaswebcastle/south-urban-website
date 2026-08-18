@@ -19,8 +19,32 @@ env:
   IMAGE_NAME: fawaswebcastle/southurban-frontend
 
 jobs:
+  lint-and-check:
+    name: Lint & Verify Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Verify Next.js build
+        run: npm run build
+
   build-and-push:
     name: Build & Push Multi-Arch Docker Image
+    needs: lint-and-check
     runs-on: ubuntu-latest
 
     steps:
@@ -63,3 +87,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
