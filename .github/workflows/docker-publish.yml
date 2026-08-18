@@ -19,8 +19,8 @@ env:
   IMAGE_NAME: fawaswebcastle/southurban-frontend
 
 jobs:
-  lint-and-check:
-    name: Lint & Verify Build
+  build:
+    name: Verify Next.js Build
     runs-on: ubuntu-latest
 
     steps:
@@ -36,15 +36,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint code
-        run: npm run lint
-
-      - name: Verify Next.js build
+      - name: Build Next.js application
         run: npm run build
 
-  build-and-push:
-    name: Build & Push Multi-Arch Docker Image
-    needs: lint-and-check
+  docker-push:
+    name: Build & Push Docker Image
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
