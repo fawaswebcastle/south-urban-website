@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import { getSessionUser } from "@/lib/session";
-import { getPrisma, hasDatabase } from "@/lib/db";
+import { hasDatabase } from "@/lib/db";
 import { readImageDimensions } from "@/lib/image-dimensions";
 import { IMAGE_SPECS, checkImage, type ImageSlot } from "@/lib/image-specs";
 
@@ -77,27 +77,7 @@ export async function POST(request: Request) {
     contentType: file.type,
   });
 
-  if (hasDatabase) {
-    try {
-      await getPrisma().mediaAsset.create({
-        data: {
-          url: blob.url,
-          pathname: blob.pathname,
-          filename: file.name,
-          contentType: file.type,
-          size: file.size,
-          width: dimensions.width,
-          height: dimensions.height,
-          slot,
-          alt: typeof alt === "string" && alt ? alt : null,
-          uploadedBy: user.email,
-        },
-      });
-    } catch (error) {
-      // The upload itself succeeded; losing the library row must not fail it.
-      console.error("[upload] could not record media asset:", error);
-    }
-  }
+
 
   return NextResponse.json({
     url: blob.url,

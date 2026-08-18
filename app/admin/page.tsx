@@ -1,30 +1,14 @@
 import Link from "next/link";
 import { ArrowRight, AlertTriangle } from "lucide-react";
 import { requireSessionUser } from "@/lib/session";
-import { getPrisma, hasDatabase } from "@/lib/db";
+import { hasDatabase } from "@/lib/db";
 import { ADMIN_NAV, findUnlisted, resolveGroup } from "@/lib/admin-nav";
 
 export default async function AdminDashboard() {
   const user = await requireSessionUser();
 
-  let counts: Record<string, number> = {};
-  let countError = false;
-  if (hasDatabase) {
-    try {
-      const client = getPrisma();
-      // Sequential rather than Promise.all: the local PGlite database used in
-      // development accepts one connection, and this is five cheap counts.
-      counts = {
-        post: await client.post.count(),
-        person: await client.person.count(),
-        service: await client.service.count(),
-        notification: await client.notification.count(),
-        galleryItem: await client.galleryItem.count(),
-      };
-    } catch {
-      countError = true;
-    }
-  }
+  const counts: Record<string, number> = {};
+  const countError = false;
 
   const empty = !countError && hasDatabase && Object.values(counts).every((n) => n === 0);
   const unlisted = findUnlisted();

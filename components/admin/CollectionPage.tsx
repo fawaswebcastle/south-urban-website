@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { AlertTriangle } from "lucide-react";
 import { getCollection } from "@/lib/collection-schema";
-import { getPrisma, hasDatabase } from "@/lib/db";
+import { hasDatabase } from "@/lib/db";
 import { requireSessionUser } from "@/lib/session";
 import { CollectionManager } from "./CollectionManager";
 
@@ -17,17 +17,7 @@ export async function CollectionPage({ slug }: { slug: string }) {
 
   if (!hasDatabase) return <NotConfigured />;
 
-  let rows: Record<string, unknown>[] = [];
-  try {
-    const model = getPrisma()[schema.model] as unknown as {
-      findMany: (args: { orderBy: Record<string, "asc" | "desc"> }) => Promise<Record<string, unknown>[]>;
-    };
-    rows = await model.findMany({
-      orderBy: schema.orderable ? { order: "asc" } : { date: "desc" },
-    });
-  } catch {
-    return <Unreachable title={schema.title} />;
-  }
+  const rows: Record<string, unknown>[] = [];
 
   // Dates and Decimals cannot cross to a client component as-is.
   const plain = JSON.parse(JSON.stringify(rows)).map((row: Record<string, unknown>) =>

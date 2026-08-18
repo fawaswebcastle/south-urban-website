@@ -31,8 +31,8 @@
   --color-sage: var(--su-sage);
   --color-rule: var(--su-rule);
 
-  --font-display: var(--font-fraunces), -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
-  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+  --font-display: "Fraunces", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
 
   --animate-marquee: marquee 40s linear infinite;
 }

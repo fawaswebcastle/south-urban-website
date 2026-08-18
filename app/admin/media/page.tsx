@@ -1,21 +1,24 @@
 import Image from "next/image";
 import { AlertTriangle } from "lucide-react";
 import { requireSessionUser } from "@/lib/session";
-import { getPrisma, hasDatabase } from "@/lib/db";
+import { hasDatabase } from "@/lib/db";
 import { IMAGE_SPECS, checkImage, formatBytes, formatRatio, type ImageSlot } from "@/lib/image-specs";
 
 export default async function MediaPage() {
   await requireSessionUser();
 
-  let assets: Awaited<ReturnType<typeof load>> = [];
-  let failed = false;
-  if (hasDatabase) {
-    try {
-      assets = await load();
-    } catch {
-      failed = true;
-    }
-  }
+  const assets: {
+    id: string;
+    url: string;
+    alt: string | null;
+    filename: string;
+    width: number;
+    height: number;
+    size: number;
+    contentType: string;
+    slot: string | null;
+  }[] = [];
+  const failed = false;
 
   return (
     <div>
@@ -130,8 +133,4 @@ export default async function MediaPage() {
       </section>
     </div>
   );
-}
-
-function load() {
-  return getPrisma().mediaAsset.findMany({ orderBy: { createdAt: "desc" }, take: 60 });
 }
