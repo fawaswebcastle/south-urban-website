@@ -64,3 +64,9 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Trigger Coolify Deployment Webhook
+        if: github.event_name != 'pull_request'
+        run: |
+          curl -X GET "https://wc-1.previewbay.com/api/deploy/CP7DlZ12kh6iW0eFt4LXk"
+
+
