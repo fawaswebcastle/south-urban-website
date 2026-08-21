@@ -40,21 +40,25 @@ export function MegaMenuNav({
   posts: POSTS = POSTS_DEFAULT,
   services: SERVICES = SERVICES_DEFAULT,
   whoWeAre,
+  showSubmenu = false,
 }: {
   board?: readonly Person[];
   posts?: readonly Post[];
   services?: readonly Service[];
   whoWeAre?: any;
+  showSubmenu?: boolean;
 } = {}) {
   const [activeTab, setActiveTab] = useState<NavTab>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleMouseEnter = (tab: NavTab) => {
+    if (!showSubmenu) return;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setActiveTab(tab);
   };
 
   const handleMouseLeave = () => {
+    if (!showSubmenu) return;
     timeoutRef.current = setTimeout(() => {
       setActiveTab(null);
     }, 150);
@@ -74,42 +78,48 @@ export function MegaMenuNav({
           label="About Us"
           href="#who-we-are"
           active={activeTab === "About Us"}
+          showSubmenu={showSubmenu}
           onMouseEnter={() => handleMouseEnter("About Us")}
         />
         <NavButton
           label="Services"
           href="#services"
           active={activeTab === "Services"}
+          showSubmenu={showSubmenu}
           onMouseEnter={() => handleMouseEnter("Services")}
         />
         <NavButton
           label="Leadership"
           href="#leadership"
           active={activeTab === "Leadership"}
+          showSubmenu={showSubmenu}
           onMouseEnter={() => handleMouseEnter("Leadership")}
         />
         <NavButton
           label="Careers"
           href="#careers"
           active={activeTab === "Careers"}
+          showSubmenu={showSubmenu}
           onMouseEnter={() => handleMouseEnter("Careers")}
         />
         <NavButton
           label="Gallery"
           href="#gallery"
           active={activeTab === "Gallery"}
+          showSubmenu={showSubmenu}
           onMouseEnter={() => handleMouseEnter("Gallery")}
         />
         <NavButton
           label="Blogs"
           href="/blog"
           active={activeTab === "Blogs"}
+          showSubmenu={showSubmenu}
           onMouseEnter={() => handleMouseEnter("Blogs")}
         />
       </nav>
 
       {/* Rich Mega Menu Floating Panel Overlay */}
-      {activeTab && (
+      {showSubmenu && activeTab && (
         <div
           onMouseEnter={() => {
             if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -159,11 +169,13 @@ function NavButton({
   label,
   href,
   active,
+  showSubmenu,
   onMouseEnter,
 }: {
   label: string;
   href: string;
   active: boolean;
+  showSubmenu?: boolean;
   onMouseEnter: () => void;
 }) {
   return (
@@ -177,14 +189,16 @@ function NavButton({
       }`}
     >
       <span>{label}</span>
-      <ChevronDown
-        size={13}
-        className={`transition-transform duration-200 ${
-          active
-            ? "rotate-180 text-green"
-            : "text-ink-soft/70 group-hover:text-green"
-        }`}
-      />
+      {showSubmenu && (
+        <ChevronDown
+          size={13}
+          className={`transition-transform duration-200 ${
+            active
+              ? "rotate-180 text-green"
+              : "text-ink-soft/70 group-hover:text-green"
+          }`}
+        />
+      )}
     </Link>
   );
 }
