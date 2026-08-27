@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, CalendarDays, PenLine } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
+import { SafeImage } from "@/components/ui/SafeImage";
 import { POSTS as POSTS_STATIC, type PostBlock } from "@/data/site";
 import { getPosts } from "@/lib/content";
 
@@ -154,8 +154,9 @@ export default async function BlogPostPage({
       <section className="bg-paper pt-10 sm:pt-14">
         <Container>
           <div className="relative aspect-[16/9] overflow-hidden rounded-2xl border border-rule/80 bg-card shadow-sm sm:aspect-[2.4/1]">
-            <Image
+            <SafeImage
               src={post.image}
+              fallbackSrc="/blog_agritech.jpg"
               alt={post.title}
               fill
               priority
@@ -233,9 +234,10 @@ export default async function BlogPostPage({
                 className="group"
               >
                 <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-rule/80 bg-card shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:border-green/50 hover:shadow-md">
-                  <div className="relative aspect-[16/10] overflow-hidden">
-                    <Image
+                  <div className="relative aspect-[16/10] overflow-hidden bg-paper-deep">
+                    <SafeImage
                       src={item.image}
+                      fallbackSrc="/blog_subsidy.jpg"
                       alt={item.title}
                       fill
                       className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"

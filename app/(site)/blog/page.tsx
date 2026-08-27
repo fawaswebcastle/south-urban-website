@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowLeft, ArrowUpRight, CalendarDays } from "lucide-react";
 import { Container } from "@/components/ui/Container";
+import { SafeImage } from "@/components/ui/SafeImage";
 import { BLOG } from "@/data/site";
 import { getContent, getPosts } from "@/lib/content";
 
@@ -62,8 +62,9 @@ export default async function BlogIndexPage() {
           <Link href={`/blog/${lead.slug}`} className="group block">
             <article className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-14">
               <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-rule/80 bg-card shadow-sm">
-                <Image
+                <SafeImage
                   src={lead.image}
+                  fallbackSrc="/blog_subsidy.jpg"
                   alt={lead.title}
                   fill
                   priority
@@ -121,9 +122,10 @@ export default async function BlogIndexPage() {
             {rest.map((post) => (
               <Link key={post.slug} href={`/blog/${post.slug}`} className="group">
                 <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-rule/80 bg-card shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:border-green/50 hover:shadow-md">
-                  <div className="relative aspect-[16/10] overflow-hidden">
-                    <Image
+                  <div className="relative aspect-[16/10] overflow-hidden bg-paper-deep">
+                    <SafeImage
                       src={post.image}
+                      fallbackSrc="/blog_harvest.jpg"
                       alt={post.title}
                       fill
                       className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
