@@ -732,6 +732,42 @@ export const POSTS = [
       },
     ],
   },
+  {
+    slug: "expanding-low-interest-agri-credit-south-india",
+    title: "Expanding Low-Interest Agricultural Credit in Southern India",
+    excerpt:
+      "How South Urban Agro is accelerating low-interest micro-finance and farm credit for smallholders across Kerala and Tamil Nadu.",
+    read: "5 min read",
+    image: "/blog_subsidy.jpg",
+    date: "2026-06-15",
+    dateLabel: "15 June 2026",
+    category: "Finance & Credit",
+    author: "Credit Operations Team",
+    body: [
+      {
+        kind: "p",
+        text: "Access to affordable credit is the foundation of agricultural productivity. South Urban Agro continues to provide low-interest credit tailored for small and marginal farmers.",
+      },
+    ],
+  },
+  {
+    slug: "expanding-agri-credit-south-india-1",
+    title: "Expanding Agricultural Credit in Southern India",
+    excerpt:
+      "How South Urban Agro is accelerating low-interest micro-finance and farm credit for smallholders across Kerala and Tamil Nadu.",
+    read: "4 min read",
+    image: "/blog_harvest.jpg",
+    date: "2026-06-01",
+    dateLabel: "1 June 2026",
+    category: "Finance & Credit",
+    author: "Agri Advisory Cell",
+    body: [
+      {
+        kind: "p",
+        text: "How South Urban Agro is accelerating low-interest micro-finance and farm credit for smallholders across Kerala and Tamil Nadu.",
+      },
+    ],
+  },
 ] as const;
 
 export const BOARD = [

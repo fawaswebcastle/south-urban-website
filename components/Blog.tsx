@@ -8,7 +8,8 @@ import { POSTS as POSTS_DEFAULT } from "@/data/site";
 import type { Post } from "@/lib/content-types";
 
 export function Blog({ posts: POSTS = POSTS_DEFAULT }: { posts?: readonly Post[] } = {}) {
-  const [lead, ...rest] = POSTS;
+  const postsToShow = POSTS.slice(0, 6);
+  const [lead, ...rest] = postsToShow;
 
   return (
     <section id="blog" className="scroll-mt-28 bg-paper-deep/50 py-16 sm:py-24 border-y border-rule/70">
