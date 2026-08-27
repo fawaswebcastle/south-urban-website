@@ -5,6 +5,11 @@ export const metadata: Metadata = {
   title: "South Urban — Agro Multi State Co-operative Society Ltd.",
   description:
     "A member-owned agro multi-state cooperative society serving farming communities across Kerala and Tamil Nadu with credit, inputs, marketing and training.",
+  icons: {
+    icon: "/logo_icon.png",
+    shortcut: "/logo_icon.png",
+    apple: "/logo_icon.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -14,6 +19,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className="h-full antialiased"
     >
       <head>
+        <link rel="icon" type="image/png" href="/logo_icon.png" />
+        <link rel="apple-touch-icon" href="/logo_icon.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
