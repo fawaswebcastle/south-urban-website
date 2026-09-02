@@ -14,6 +14,51 @@ type Target = {
   desc?: string;
 };
 
+const STATIC_SEARCH_TARGETS: Target[] = [
+  {
+    label: "About Us",
+    category: "Pages",
+    href: "/about",
+    desc: "Constituted under the MSCS Act 2002 — vision, mission, and legacy",
+  },
+  {
+    label: "Blogs & Insights",
+    category: "Pages",
+    href: "/blog",
+    desc: "Articles, market news, and insights from South Urban's team of agri-experts",
+  },
+  {
+    label: "Services",
+    category: "Pages",
+    href: "/#services",
+    desc: "12 services across the whole agricultural value chain",
+  },
+  {
+    label: "Leadership & Governance",
+    category: "Pages",
+    href: "/#leadership",
+    desc: "Board of Directors, executives, and leadership team",
+  },
+  {
+    label: "Careers",
+    category: "Pages",
+    href: "/#careers",
+    desc: "Build your career with us — join our team",
+  },
+  {
+    label: "Gallery",
+    category: "Pages",
+    href: "/#gallery",
+    desc: "Field operations, farmer events, and community photos",
+  },
+  {
+    label: "Contact Us",
+    category: "Quick Links",
+    href: "/#contact",
+    desc: "Get in touch with South Urban Agro Co-op",
+  },
+];
+
 export function SiteSearch({
   tone = "ink",
   navLinks: NAV_LINKS = NAV_LINKS_DEFAULT,
@@ -29,30 +74,47 @@ export function SiteSearch({
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  // Built from props rather than module scope, so admin edits apply.
-  const targets: Target[] = useMemo(
-    () => [
-      ...NAV_LINKS.map((l) => ({
-        label: l.label,
-        category: "Pages" as const,
-        href: l.href,
-        desc: `Navigate to ${l.label} page`,
-      })),
-      {
-        label: "Contact Us",
-        category: "Quick Links" as const,
-        href: "/#contact",
-        desc: "Get in touch with South Urban Agro Co-op",
-      },
-      ...SERVICES.map((s) => ({
-        label: s.title,
-        category: "Services" as const,
-        href: "/#services",
-        desc: s.summary,
-      })),
-    ],
-    [NAV_LINKS, SERVICES]
-  );
+  const normalizeHref = (label: string, href: string) => {
+    const l = label.toLowerCase();
+    if (l.includes("about") || href === "/about") return "/about";
+    if (l.includes("blog") || href === "/blog" || href === "/blogs") return "/blog";
+    if (l.includes("service") || href.includes("service")) return "/#services";
+    if (l.includes("leader") || href.includes("leadership")) return "/#leadership";
+    if (l.includes("career") || href.includes("career")) return "/#careers";
+    if (l.includes("gallery") || href.includes("gallery")) return "/#gallery";
+    if (l.includes("who we are") || href.includes("who-we-are")) return "/#who-we-are";
+    if (l.includes("contact") || href.includes("contact")) return "/#contact";
+    if (href.startsWith("/#") || href.startsWith("#")) return href.startsWith("#") ? "/" + href : href;
+    return "/#" + (href.replace(/^\//, "") || "services");
+  };
+
+  const targets: Target[] = useMemo(() => {
+    const customServices: Target[] = (SERVICES || []).map((s) => ({
+      label: s.title,
+      category: "Services" as const,
+      href: "/#services",
+      desc: s.summary,
+    }));
+
+    // Merge static pages & custom services, ensuring /about and /blog go to pages and all others to /#<section>
+    const navTargets: Target[] = (NAV_LINKS || []).map((l) => ({
+      label: l.label,
+      category: "Pages" as const,
+      href: normalizeHref(l.label, l.href),
+      desc: `Navigate to ${l.label}`,
+    }));
+
+    const combined = [...STATIC_SEARCH_TARGETS, ...navTargets, ...customServices];
+
+    // Deduplicate by href
+    const seen = new Set<string>();
+    return combined.filter((t) => {
+      const key = `${t.label.toLowerCase()}-${t.href}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [NAV_LINKS, SERVICES]);
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
