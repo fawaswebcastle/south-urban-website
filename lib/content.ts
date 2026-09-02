@@ -299,14 +299,23 @@ export async function getContent() {
     intro: blogIntroRes?.intro || defaults.BLOG.intro,
   };
 
-  const socials = Array.isArray(headerRes?.socials) && headerRes.socials.length > 0
-    ? headerRes.socials.map((s: any) => ({ name: s.platform || s.name, href: s.url || s.href }))
-    : defaults.SOCIALS;
-  const navLinks = Array.isArray(headerRes?.navItems) && headerRes.navItems.length > 0
+  const rawSocials = (Array.isArray(headerRes?.socials) && headerRes.socials.length > 0)
+    ? headerRes.socials
+    : (Array.isArray(contactRes?.socials) && contactRes.socials.length > 0)
+    ? contactRes.socials
+    : defaults.HEADER.socials;
+  const socials = rawSocials.map((s: any) => ({
+    name: s.platform || s.name || "",
+    href: s.url || s.href || "#",
+  })).filter((s: any) => s.name && s.href);
+
+  const navLinks = (Array.isArray(headerRes?.navItems) && headerRes.navItems.length > 0)
     ? headerRes.navItems.map((n: any) => ({ label: n.label, href: n.href }))
+    : (Array.isArray(footerRes?.quickLinks) && footerRes.quickLinks.length > 0)
+    ? footerRes.quickLinks.map((n: any) => ({ label: n.label, href: n.href }))
     : defaults.NAV_LINKS;
   const branding = {
-    logo: brandingRes?.logo?.url ? getStrapiMediaUrl(brandingRes.logo.url) : defaults.IMAGES.logo,
+    logo: getStrapiMediaUrl(brandingRes?.logo?.url) || defaults.HEADER.logo,
   };
 
   const whatWeOffer = {
@@ -324,32 +333,29 @@ export async function getContent() {
   };
 
   const header = {
-    phone: headerRes?.phone || contactRes?.phone || defaults.CONTACT.phone,
-    contactBtnLabel: headerRes?.contactBtnLabel || "Contact Us",
-    contactBtnHref: headerRes?.contactBtnHref || "#contact",
-    logo: getStrapiMediaUrl(headerRes?.logo?.url) || brandingRes?.logo?.url ? getStrapiMediaUrl(brandingRes.logo.url) : defaults.IMAGES.logo,
-    navItems: Array.isArray(headerRes?.navItems) && headerRes.navItems.length > 0
-      ? headerRes.navItems.map((n: any) => ({ label: n.label, href: n.href }))
-      : defaults.NAV_LINKS,
-    socials: Array.isArray(headerRes?.socials) && headerRes.socials.length > 0
-      ? headerRes.socials.map((s: any) => ({ name: s.platform, href: s.url }))
-      : socials,
+    phone: headerRes?.phone || contactRes?.phone || defaults.HEADER.phone,
+    contactBtnLabel: headerRes?.contactBtnLabel || defaults.HEADER.contactBtnLabel,
+    contactBtnHref: headerRes?.contactBtnHref || defaults.HEADER.contactBtnHref,
+    logo: getStrapiMediaUrl(headerRes?.logo?.url) || getStrapiMediaUrl(brandingRes?.logo?.url) || defaults.HEADER.logo,
+    navItems: navLinks.length > 0 ? navLinks : defaults.HEADER.navItems,
+    socials: socials.length > 0 ? socials : defaults.HEADER.socials,
   };
 
   const footer = {
-    description: footerRes?.description || "Empowering agricultural communities through cooperative principles, sustainable practices, and market-driven solutions since 2009.",
-    regText: footerRes?.regText || "Reg. MSCS/CR/1664/2026",
-    areaText: footerRes?.areaText || "Area of operation: Kerala, Tamil Nadu",
-    quickLinksTitle: footerRes?.quickLinksTitle || "QUICK LINKS",
+    description: footerRes?.description || "",
+    regText: footerRes?.regText || "",
+    areaText: footerRes?.areaText || "",
+    quickLinksTitle: footerRes?.quickLinksTitle || "",
     quickLinks: Array.isArray(footerRes?.quickLinks) && footerRes.quickLinks.length > 0
       ? footerRes.quickLinks.map((n: any) => ({ label: n.label, href: n.href }))
-      : defaults.NAV_LINKS,
-    contactTitle: footerRes?.contactTitle || "GET IN TOUCH",
-    phone: footerRes?.phone || contactRes?.phone || defaults.CONTACT.phone,
-    email: footerRes?.email || contactRes?.email || defaults.CONTACT.email,
-    address: footerRes?.address || companyRes?.address || defaults.COMPANY_DETAILS.rows[2].value,
-    copyright: footerRes?.copyright || `Copyright © ${new Date().getFullYear()} South Urban. All rights reserved.`,
-    actText: footerRes?.actText || "Registered under the Multi State Cooperative Societies Act, 2002",
+      : [],
+    contactTitle: footerRes?.contactTitle || "",
+    phone: footerRes?.phone || "",
+    email: footerRes?.email || "",
+    address: footerRes?.address || "",
+    copyright: footerRes?.copyright || "",
+    actText: footerRes?.actText || "",
+    logo: getStrapiMediaUrl(footerRes?.logo?.url) || "",
   };
 
   return {

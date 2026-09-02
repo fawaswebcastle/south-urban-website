@@ -72,11 +72,11 @@ export const NOTIFICATIONS = [
 ] as const;
 
 export const NAV_LINKS = [
-  { label: "About Us", href: "#who-we-are" },
-  { label: "Services", href: "#services" },
-  { label: "Leadership", href: "#leadership" },
-  { label: "Careers", href: "#careers" },
-  { label: "Gallery", href: "#gallery" },
+  { label: "About Us", href: "/about" },
+  { label: "Services", href: "/#services" },
+  { label: "Leadership", href: "/#leadership" },
+  { label: "Careers", href: "/#careers" },
+  { label: "Gallery", href: "/#gallery" },
   { label: "Blogs", href: "/blog" },
 ];
 
@@ -878,3 +878,12 @@ export const SOCIALS = [
   { name: "X", href: "#" },
   { name: "LinkedIn", href: "#" },
 ] as const;
+
+export const HEADER = {
+  phone: CONTACT.phone,
+  contactBtnLabel: "Talk to the Society",
+  contactBtnHref: "/#contact",
+  logo: "/logo_official.png",
+  navItems: NAV_LINKS,
+  socials: SOCIALS,
+};

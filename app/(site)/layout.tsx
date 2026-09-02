@@ -24,9 +24,9 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
     <>
       <Nav
         header={content.header}
-        navLinks={content.header?.navItems || content.navLinks}
-        contact={content.header?.phone ? { ...content.contact, phone: content.header.phone } : content.contact}
-        socials={content.header?.socials || content.socials}
+        navLinks={content.header?.navItems || []}
+        contact={{ phone: content.header?.phone }}
+        socials={content.header?.socials || []}
         board={people.board}
         posts={posts}
         services={services}
@@ -35,9 +35,12 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
       <div className="flex-1">{children}</div>
       <Footer
         footer={content.footer}
-        navLinks={content.footer?.quickLinks || content.navLinks}
-        contact={content.contact}
-        companyDetails={content.companyDetails}
+        navLinks={content.footer?.quickLinks || []}
+        contact={{
+          phone: content.footer?.phone,
+          email: content.footer?.email,
+          address: content.footer?.address,
+        }}
       />
     </>
   );

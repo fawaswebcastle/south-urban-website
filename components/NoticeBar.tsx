@@ -122,7 +122,7 @@ export function NoticeBar({
               </button>
               {selectedNotice.hasDownload && (
                 <a
-                  href="#contact"
+                  href="/#contact"
                   onClick={() => setSelectedNotice(null)}
                   className="inline-flex items-center gap-2 rounded-lg bg-green px-4 py-2 text-[13px] font-medium text-white hover:bg-green-deep transition-colors shadow-xs"
                 >
@@ -186,7 +186,7 @@ export function NoticeBar({
                   {notif.hasDownload && (
                     <div className="mt-3 flex items-center gap-2">
                       <a
-                        href="#contact"
+                        href="/#contact"
                         onClick={() => setShowAllModal(false)}
                         className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-green hover:underline"
                       >

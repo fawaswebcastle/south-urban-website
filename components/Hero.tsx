@@ -50,11 +50,11 @@ export function Hero({ hero: HERO = HERO_DEFAULT }: { hero?: HeroContent } = {})
 
         <div className="mt-6 flex flex-col gap-5 sm:mt-7 lg:flex-row lg:items-center lg:gap-10">
           <div className="flex flex-wrap items-center gap-3">
-            <Button href="#services" variant="onDark">
+            <Button href="/#services" variant="onDark">
               Explore our services
               <ArrowRight size={15} />
             </Button>
-            <Button href="#who-we-are" variant="outlineOnDark">
+            <Button href="/#who-we-are" variant="outlineOnDark">
               Who we are
             </Button>
           </div>

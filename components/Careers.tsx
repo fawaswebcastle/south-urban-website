@@ -25,7 +25,7 @@ export function Careers() {
 
             {/* CTA Button */}
             <div className="shrink-0 pt-2 md:pt-0">
-              <Button href="#contact" variant="onDark">
+              <Button href="/#contact" variant="onDark">
                 Apply now
                 <ArrowRight size={15} />
               </Button>

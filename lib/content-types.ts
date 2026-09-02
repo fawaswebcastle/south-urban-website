@@ -109,5 +109,6 @@ export type FooterContent = {
   address: string;
   copyright: string;
   actText: string;
+  logo?: string;
 };
 

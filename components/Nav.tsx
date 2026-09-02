@@ -20,9 +20,9 @@ import {
 import type { ContactInfo, NavLink, Person, Post, Service, Social } from "@/lib/content-types";
 
 export function Nav({
-  navLinks: NAV_LINKS = NAV_LINKS_DEFAULT,
-  contact = CONTACT_DEFAULT,
-  socials = SOCIALS_DEFAULT,
+  navLinks: NAV_LINKS = [],
+  contact,
+  socials = [],
   board = BOARD_DEFAULT,
   posts = POSTS_DEFAULT,
   services = SERVICES_DEFAULT,
@@ -30,7 +30,7 @@ export function Nav({
   header,
 }: {
   navLinks?: readonly NavLink[];
-  contact?: ContactInfo;
+  contact?: Partial<ContactInfo>;
   socials?: readonly Social[];
   board?: readonly Person[];
   posts?: readonly Post[];
@@ -39,8 +39,8 @@ export function Nav({
   header?: any;
 } = {}) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const btnLabel = header?.contactBtnLabel || "Contact Us";
-  const btnHref = header?.contactBtnHref || "#contact";
+  const btnLabel = header?.contactBtnLabel;
+  const btnHref = header?.contactBtnHref;
 
   return (
     <header className="sticky top-0 z-50">
@@ -49,7 +49,7 @@ export function Nav({
       <div className="border-b border-rule/80 bg-card/95 backdrop-blur-md">
         <Container className="flex items-center justify-between gap-6 py-3.5">
           <Link href="/" aria-label="South Urban — home" className="transition-opacity hover:opacity-85">
-            <Logo />
+            <Logo src={header?.logo} />
           </Link>
 
           <MegaMenuNav board={board} posts={posts} services={services} whoWeAre={whoWeAre} />
@@ -57,12 +57,14 @@ export function Nav({
           <div className="flex items-center gap-3">
             <SiteSearch navLinks={NAV_LINKS} services={services} />
 
-            <div className="hidden lg:block">
-              <Button href={btnHref} variant="solid">
-                {btnLabel}
-                <ArrowUpRight size={15} />
-              </Button>
-            </div>
+            {btnLabel && btnHref && (
+              <div className="hidden lg:block">
+                <Button href={btnHref} variant="solid">
+                  {btnLabel}
+                  <ArrowUpRight size={15} />
+                </Button>
+              </div>
+            )}
 
             <button
               className="flex h-9 w-9 items-center justify-center rounded-lg border border-rule text-ink transition-colors hover:bg-paper-deep lg:hidden"
@@ -89,10 +91,12 @@ export function Nav({
                 {link.label}
               </Link>
             ))}
-            <Button href={btnHref} variant="solid" className="mt-4 justify-center">
-              {btnLabel}
-              <ArrowUpRight size={15} />
-            </Button>
+            {btnLabel && btnHref && (
+              <Button href={btnHref} variant="solid" className="mt-4 justify-center">
+                {btnLabel}
+                <ArrowUpRight size={15} />
+              </Button>
+            )}
           </Container>
         </div>
       )}

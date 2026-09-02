@@ -76,35 +76,35 @@ export function MegaMenuNav({
       <nav className="hidden items-center gap-1.5 lg:flex">
         <NavButton
           label="About Us"
-          href="#who-we-are"
+          href="/about"
           active={activeTab === "About Us"}
           showSubmenu={showSubmenu}
           onMouseEnter={() => handleMouseEnter("About Us")}
         />
         <NavButton
           label="Services"
-          href="#services"
+          href="/#services"
           active={activeTab === "Services"}
           showSubmenu={showSubmenu}
           onMouseEnter={() => handleMouseEnter("Services")}
         />
         <NavButton
           label="Leadership"
-          href="#leadership"
+          href="/#leadership"
           active={activeTab === "Leadership"}
           showSubmenu={showSubmenu}
           onMouseEnter={() => handleMouseEnter("Leadership")}
         />
         <NavButton
           label="Careers"
-          href="#careers"
+          href="/#careers"
           active={activeTab === "Careers"}
           showSubmenu={showSubmenu}
           onMouseEnter={() => handleMouseEnter("Careers")}
         />
         <NavButton
           label="Gallery"
-          href="#gallery"
+          href="/#gallery"
           active={activeTab === "Gallery"}
           showSubmenu={showSubmenu}
           onMouseEnter={() => handleMouseEnter("Gallery")}
@@ -248,7 +248,7 @@ function AboutMegaContent({
           programs.
         </p>
         <Link
-          href="#who-we-are"
+          href="/#who-we-are"
           onClick={onClose}
           className="inline-flex items-center gap-1.5 text-[13px] font-medium text-green hover:underline"
         >
@@ -266,7 +266,7 @@ function AboutMegaContent({
           schemes, and thrift options.
         </p>
         <Link
-          href="#contact"
+          href="/#contact"
           onClick={onClose}
           className="inline-flex items-center justify-center gap-2 w-full rounded-lg bg-green px-3 py-2 text-[12.5px] font-medium text-white shadow-xs hover:bg-green-deep transition-colors"
         >
@@ -305,7 +305,7 @@ function ServicesMegaContent({
           </p>
         </div>
         <Link
-          href="#services"
+          href="/#services"
           onClick={onClose}
           className="text-[12.5px] font-medium text-green hover:underline flex items-center gap-1"
         >
@@ -341,7 +341,7 @@ function ServiceTile({
 }) {
   return (
     <Link
-      href="#services"
+      href="/#services"
       onClick={onClose}
       className="group rounded-xl border border-rule/70 bg-paper/60 p-3.5 transition-all hover:border-green/50 hover:bg-card shadow-2xs"
     >
@@ -381,7 +381,7 @@ function LeadershipMegaContent({
           </p>
         </div>
         <Link
-          href="#leadership"
+          href="/#leadership"
           onClick={onClose}
           className="text-[12.5px] font-medium text-green hover:underline"
         >
@@ -393,7 +393,7 @@ function LeadershipMegaContent({
         {topBoard.map((person, i) => (
           <Link
             key={`${person.name}-top-${i}`}
-            href="#leadership"
+            href="/#leadership"
             onClick={onClose}
             className="group flex items-center gap-3 rounded-xl border border-rule/70 bg-paper/60 p-3 transition-all hover:border-green/50 hover:bg-card shadow-2xs"
           >
@@ -436,7 +436,7 @@ function CareersMegaContent({ onClose }: { onClose: () => void }) {
           Kerala and Tamil Nadu.
         </p>
         <Link
-          href="#careers"
+          href="/#careers"
           onClick={onClose}
           className="inline-flex items-center gap-1.5 text-[13px] font-medium text-green hover:underline"
         >
@@ -454,7 +454,7 @@ function CareersMegaContent({ onClose }: { onClose: () => void }) {
           Tamil Nadu
         </p>
         <Link
-          href="#careers"
+          href="/#careers"
           onClick={onClose}
           className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-green hover:underline pt-1"
         >
@@ -476,7 +476,7 @@ function GalleryMegaContent({ onClose }: { onClose: () => void }) {
           </h4>
         </div>
         <Link
-          href="#gallery"
+          href="/#gallery"
           onClick={onClose}
           className="text-[12.5px] font-medium text-green hover:underline"
         >
