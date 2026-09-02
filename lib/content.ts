@@ -418,15 +418,23 @@ export async function getPeople() {
       const allDefaults = [...defaults.BOARD, ...defaults.MANAGEMENT];
 
       for (const p of list) {
-        const matched = allDefaults.find(
-          (d) => d.name.toLowerCase() === p.name?.toLowerCase()
-        );
+        const cleanName = (n: string = "") =>
+          n.toLowerCase().replace(/^(mr\.|dr\.|ms\.|mrs\.)\s*/i, "").trim();
+
+        const matched = allDefaults.find((d) => {
+          const dClean = cleanName(d.name);
+          const pClean = cleanName(p.name);
+          return (
+            d.name.toLowerCase() === p.name?.toLowerCase() ||
+            (dClean && pClean && (dClean === pClean || dClean.includes(pClean) || pClean.includes(dClean)))
+          );
+        });
 
         const photoUrl =
           getStrapiMediaUrl(p.photo?.url) ||
           (typeof p.photo === "string" ? p.photo : "") ||
           matched?.photo ||
-          "/sujan_mathew.jpg";
+          "/avatar_placeholder.svg";
 
         const item = {
           name: p.name,

@@ -74,7 +74,7 @@ export function Leadership({
                 <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-rule">
                   <SafeImage
                     src={active.photo}
-                    fallbackSrc="/sujan_mathew.jpg"
+                    fallbackSrc="/avatar_placeholder.svg"
                     alt={active.name}
                     fill
                     className="object-cover"
@@ -123,7 +123,7 @@ function PersonCard({
       <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-paper-deep border border-rule/70 shadow-xs">
         <SafeImage
           src={person.photo}
-          fallbackSrc="/sujan_mathew.jpg"
+          fallbackSrc="/avatar_placeholder.svg"
           alt={person.name}
           fill
           className={clsx(
