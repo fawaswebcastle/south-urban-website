@@ -79,9 +79,12 @@ export type CompanyDetails = {
 };
 
 export type HeroContent = {
+  badge?: string;
   title: string;
-  titleAccent: string;
+  titleAccent?: string;
   intro: string;
+  actionText?: string;
+  actionUrl?: string;
   banner: {
     main: { src: string; alt: string; caption: string };
     side: readonly { src: string; alt: string; caption: string; note: string }[];

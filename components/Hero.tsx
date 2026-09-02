@@ -35,7 +35,7 @@ export function Hero({ hero: HERO = HERO_DEFAULT }: { hero?: HeroContent } = {})
       <Container className="w-full pb-[clamp(40px,8vh,80px)] pt-[clamp(64px,12vh,120px)]">
         <div className="flex flex-wrap items-center gap-3">
           <span className="label text-gold font-semibold tracking-[0.18em]">
-            Kerala &middot; Tamil Nadu
+            {HERO.badge || "Kerala · Tamil Nadu"}
           </span>
           <span aria-hidden className="hidden h-px w-12 bg-white/20 sm:block" />
           <span className="label text-white/80">Serving members since 2009</span>
@@ -43,15 +43,17 @@ export function Hero({ hero: HERO = HERO_DEFAULT }: { hero?: HeroContent } = {})
 
         <h1 className="font-display mt-3.5 max-w-[20ch] text-[clamp(2.2rem,5.2vw,4.6rem)] font-semibold leading-[1.04] tracking-tight text-white sm:mt-5">
           {HERO.title}{" "}
-          <span className="block font-normal not-italic text-sage/90">
-            {HERO.titleAccent}
-          </span>
+          {HERO.titleAccent && (
+            <span className="block font-normal not-italic text-sage/90">
+              {HERO.titleAccent}
+            </span>
+          )}
         </h1>
 
         <div className="mt-6 flex flex-col gap-5 sm:mt-7 lg:flex-row lg:items-center lg:gap-10">
           <div className="flex flex-wrap items-center gap-3">
-            <Button href="/#services" variant="onDark">
-              Explore our services
+            <Button href={HERO.actionUrl || "/#services"} variant="onDark">
+              {HERO.actionText || "Explore our services"}
               <ArrowRight size={15} />
             </Button>
             <Button href="/#who-we-are" variant="outlineOnDark">
