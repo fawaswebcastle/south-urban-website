@@ -887,3 +887,12 @@ export const HEADER = {
   navItems: NAV_LINKS,
   socials: SOCIALS,
 };
+
+export const CAREERS = {
+  tag: "JOIN OUR TEAM",
+  title: "Build your career with us",
+  description:
+    "Be part of a mission-driven organization that creates lasting impact for farming communities.",
+  btnLabel: "Apply now",
+  btnHref: "/#contact",
+};

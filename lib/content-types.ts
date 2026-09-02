@@ -54,6 +54,14 @@ export type Notification = {
 
 export type GalleryItem = { src: string; alt: string; category: string };
 
+export type CareersData = {
+  tag?: string;
+  title?: string;
+  description?: string;
+  btnLabel?: string;
+  btnHref?: string;
+};
+
 export type ContactInfo = {
   tag?: string;
   title?: string;

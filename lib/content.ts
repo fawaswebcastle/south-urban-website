@@ -51,6 +51,7 @@ export async function getContent() {
     whatWeOfferRes,
     headerRes,
     footerRes,
+    careersRes,
   ] = await Promise.all([
     fetchStrapi<any>("/hero?populate=*"),
     fetchStrapi<any>("/who-we-are?populate=*"),
@@ -70,6 +71,7 @@ export async function getContent() {
     fetchStrapi<any>("/what-we-offer?populate=*"),
     fetchStrapi<any>("/header?populate=*"),
     fetchStrapi<any>("/footer?populate=*"),
+    fetchStrapi<any>("/careers?populate=*"),
   ]);
 
   const hero = {
@@ -358,12 +360,21 @@ export async function getContent() {
     logo: getStrapiMediaUrl(footerRes?.logo?.url) || "",
   };
 
+  const careers = {
+    tag: careersRes?.tag || defaults.CAREERS.tag,
+    title: careersRes?.title || defaults.CAREERS.title,
+    description: careersRes?.description || defaults.CAREERS.description,
+    btnLabel: careersRes?.btnLabel || defaults.CAREERS.btnLabel,
+    btnHref: careersRes?.btnHref || defaults.CAREERS.btnHref,
+  };
+
   return {
     hero,
     whoWeAre,
     notice,
     header,
     footer,
+    careers,
     facts: Array.isArray(whoWeAreRes?.facts) && whoWeAreRes.facts.length > 0
       ? whoWeAreRes.facts.map((f: any) => ({
           value: f.value,
@@ -481,8 +492,8 @@ export async function getServices() {
   );
 }
 
-export async function getNotifications() {
-  return safe(
+export async function getNotifications(): Promise<Notification[]> {
+  return safe<Notification[]>(
     async () => {
       const list = await fetchStrapi<any[]>("/notifications?populate=*");
       if (!list || list.length === 0) return null;

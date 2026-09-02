@@ -38,7 +38,7 @@ export default async function Home() {
       <Services services={services} whatWeOffer={content.whatWeOffer} />
       <Leadership board={people.board} management={people.management} />
       <Gallery gallery={gallery} categories={galleryCategories} />
-      <Careers />
+      <Careers careers={content.careers} />
       <Blog posts={posts} />
       <Contact contact={content.contact} />
     </main>

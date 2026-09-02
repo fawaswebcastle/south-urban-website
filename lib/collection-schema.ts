@@ -121,7 +121,7 @@ export const COLLECTION_SCHEMAS: CollectionSchema[] = [
       { kind: "text", key: "date", label: "Date shown", required: true, help: 'Free text, exactly as it should read — e.g. "07.08.2026 04:37 PM".' },
       { kind: "text", key: "category", label: "Category", required: true },
       { kind: "boolean", key: "hasDownload", label: "Has an attachment", help: "Adds a download icon and a download button in the dialog." },
-      { kind: "image", key: "document", label: "Document / Circular File", help: "Upload PDF or circular document file." },
+      { kind: "image", key: "document", label: "Document / Circular File", slot: "postImage", help: "Upload PDF or circular document file." },
       { kind: "boolean", key: "published", label: "Show in the ticker" },
     ],
   },
