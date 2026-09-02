@@ -26,18 +26,15 @@ export async function fetchStrapi<T>(
 ): Promise<T | null> {
   const url = `${STRAPI_URL}/api${path.startsWith("/") ? path : `/${path}`}`;
   try {
-    const isDev = process.env.NODE_ENV === "development";
     const res = await fetch(url, {
       headers: {
         "Content-Type": "application/json",
       },
-      cache: isDev ? "no-store" : undefined,
-      next: isDev
-        ? undefined
-        : {
-            revalidate: options.revalidate ?? 60,
-            tags: options.tags ?? [CONTENT_TAG],
-          },
+      cache: "no-store",
+      next: {
+        revalidate: options.revalidate ?? 0,
+        tags: options.tags ?? [CONTENT_TAG],
+      },
     });
 
     if (!res.ok) {

@@ -12,6 +12,9 @@ import { getContent, getPeople, getPosts, getServices } from "@/lib/content";
  * Nav is a client component, so everything it renders is passed as props
  * rather than read from the database inside it.
  */
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
+
 export default async function SiteLayout({ children }: LayoutProps<"/">) {
   const [content, people, posts, services] = await Promise.all([
     getContent(),
