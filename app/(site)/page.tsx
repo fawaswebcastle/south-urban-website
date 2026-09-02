@@ -39,7 +39,7 @@ export default async function Home() {
       <Leadership board={people.board} management={people.management} />
       <Gallery gallery={gallery} categories={galleryCategories} />
       <Careers careers={content.careers} />
-      <Blog posts={posts} />
+      <Blog posts={posts} blogIntro={content.blogIntro} />
       <Contact contact={content.contact} />
     </main>
   );

@@ -7,7 +7,13 @@ import { SafeImage } from "./ui/SafeImage";
 import { POSTS as POSTS_DEFAULT } from "@/data/site";
 import type { Post } from "@/lib/content-types";
 
-export function Blog({ posts: POSTS = POSTS_DEFAULT }: { posts?: readonly Post[] } = {}) {
+export function Blog({
+  posts: POSTS = POSTS_DEFAULT,
+  blogIntro: BLOG_INTRO,
+}: {
+  posts?: readonly Post[];
+  blogIntro?: { label?: string; title?: string; intro?: string };
+} = {}) {
   const postsToShow = POSTS.slice(0, 6);
   const [lead, ...rest] = postsToShow;
 
@@ -16,9 +22,9 @@ export function Blog({ posts: POSTS = POSTS_DEFAULT }: { posts?: readonly Post[]
       <Container>
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
-            label="Insights & updates"
-            title="Latest from our blog"
-            intro="Articles, market news, and insights from South Urban's team of agri-experts."
+            label={BLOG_INTRO?.label || "Insights & updates"}
+            title={BLOG_INTRO?.title || "Latest from our blog"}
+            intro={BLOG_INTRO?.intro || "Articles, market news, and insights from South Urban's team of agri-experts."}
           />
           <Button href="/blog" variant="outline" className="shrink-0">
             View all articles
