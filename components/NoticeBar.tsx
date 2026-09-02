@@ -47,7 +47,7 @@ export function NoticeBar({
                     {item.date}
                   </span>
 
-                  {item.hasDownload && (
+                  {Boolean(item.documentUrl) && (
                     <span className="flex items-center text-green opacity-90" title="Attachment available">
                       <Download size={13} />
                     </span>
@@ -120,9 +120,12 @@ export function NoticeBar({
               >
                 Close
               </button>
-              {selectedNotice.hasDownload && (
+              {Boolean(selectedNotice.documentUrl) && (
                 <a
-                  href="/#contact"
+                  href={selectedNotice.documentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
                   onClick={() => setSelectedNotice(null)}
                   className="inline-flex items-center gap-2 rounded-lg bg-green px-4 py-2 text-[13px] font-medium text-white hover:bg-green-deep transition-colors shadow-xs"
                 >
@@ -183,10 +186,13 @@ export function NoticeBar({
                     {notif.summary}
                   </p>
 
-                  {notif.hasDownload && (
+                  {Boolean(notif.documentUrl) && (
                     <div className="mt-3 flex items-center gap-2">
                       <a
-                        href="/#contact"
+                        href={notif.documentUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        download
                         onClick={() => setShowAllModal(false)}
                         className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-green hover:underline"
                       >

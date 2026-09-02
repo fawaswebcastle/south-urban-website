@@ -49,6 +49,7 @@ export type Notification = {
   category: string;
   summary: string;
   hasDownload: boolean;
+  documentUrl?: string;
 };
 
 export type GalleryItem = { src: string; alt: string; category: string };

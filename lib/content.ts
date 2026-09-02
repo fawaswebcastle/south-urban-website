@@ -487,14 +487,27 @@ export async function getNotifications() {
       const list = await fetchStrapi<any[]>("/notifications?populate=*");
       if (!list || list.length === 0) return null;
 
-      return list.map((n: any) => ({
-        id: String(n.id || n.documentId),
-        title: n.title,
-        date: n.date,
-        category: n.category || "Announcement",
-        summary: n.summary || "",
-        hasDownload: Boolean(n.hasDownload),
-      }));
+      return list.map((n: any) => {
+        const docMedia = n.document || n.file || n.attachment;
+        const rawUrl =
+          (typeof docMedia === "string" ? docMedia : "") ||
+          docMedia?.url ||
+          docMedia?.data?.attributes?.url ||
+          docMedia?.data?.url ||
+          (Array.isArray(docMedia) ? docMedia[0]?.url || docMedia[0]?.data?.attributes?.url : "") ||
+          n.documentUrl ||
+          "";
+        const documentUrl = getStrapiMediaUrl(rawUrl);
+        return {
+          id: String(n.id || n.documentId),
+          title: n.title,
+          date: n.date,
+          category: n.category || "Announcement",
+          summary: n.summary || "",
+          hasDownload: Boolean(documentUrl),
+          documentUrl,
+        };
+      });
     },
     defaults.NOTIFICATIONS as unknown as Notification[],
     "notifications"
