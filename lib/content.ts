@@ -465,18 +465,37 @@ export async function getPosts() {
       const list = await fetchStrapi<any[]>("/posts?populate=*");
       if (!list || list.length === 0) return null;
 
-      return list.map((p: any) => ({
-        slug: p.slug || p.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-        title: p.title,
-        excerpt: p.excerpt || "",
-        read: p.readTime || "3 min read",
-        image: getStrapiMediaUrl(p.image?.url) || p.image || "",
-        date: p.date || new Date().toISOString().slice(0, 10),
-        dateLabel: p.date || "13 August 2026",
-        category: p.category || "General",
-        author: p.author || "South Urban Team",
-        body: p.body || [{ kind: "paragraph", text: p.excerpt || "" }],
-      }));
+      const fallbackImages = [
+        "/blog_subsidy.jpg",
+        "/blog_agritech.jpg",
+        "/blog_award.jpg",
+        "/blog_harvest.jpg",
+      ];
+
+      return list.map((p: any, index: number) => {
+        const slug = p.slug || p.title?.toLowerCase().replace(/[^a-z0-9]+/g, "-") || `post-${index}`;
+        const matched = defaults.POSTS.find(
+          (d) => d.slug === slug || d.title.toLowerCase() === p.title?.toLowerCase()
+        );
+        const imageUrl =
+          getStrapiMediaUrl(p.image?.url) ||
+          (typeof p.image === "string" ? p.image : "") ||
+          matched?.image ||
+          fallbackImages[index % fallbackImages.length];
+
+        return {
+          slug,
+          title: p.title,
+          excerpt: p.excerpt || "",
+          read: p.readTime || "3 min read",
+          image: imageUrl,
+          date: p.date || new Date().toISOString().slice(0, 10),
+          dateLabel: p.date || "13 August 2026",
+          category: p.category || "General",
+          author: p.author || "South Urban Team",
+          body: p.body || [{ kind: "paragraph", text: p.excerpt || "" }],
+        };
+      });
     },
     defaults.POSTS as unknown as Post[],
     "posts"
