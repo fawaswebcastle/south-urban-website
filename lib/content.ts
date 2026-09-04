@@ -35,6 +35,7 @@ export async function getContent() {
   const [
     heroRes,
     whoWeAreRes,
+    aboutWhoWeAreRes,
     noticeRes,
     contactRes,
     companyRes,
@@ -55,6 +56,7 @@ export async function getContent() {
   ] = await Promise.all([
     fetchStrapi<any>("/hero?populate=*"),
     fetchStrapi<any>("/who-we-are?populate=*"),
+    fetchStrapi<any>("/about-who-we-are?populate=*"),
     fetchStrapi<any>("/notice?populate=*"),
     fetchStrapi<any>("/contact?populate=*"),
     fetchStrapi<any>("/company-details?populate=*"),
@@ -92,10 +94,18 @@ export async function getContent() {
 
   const whoWeAre = {
     ...defaults.WHO_WE_ARE,
-    tag: whoWeAreRes?.tag || defaults.WHO_WE_ARE.label,
-    label: whoWeAreRes?.tag || defaults.WHO_WE_ARE.label,
-    title: whoWeAreRes?.title || defaults.WHO_WE_ARE.title,
-    lead: whoWeAreRes?.description1 || defaults.WHO_WE_ARE.lead,
+    tag: aboutWhoWeAreRes?.tag || whoWeAreRes?.tag || defaults.WHO_WE_ARE.label,
+    label: aboutWhoWeAreRes?.tag || whoWeAreRes?.tag || defaults.WHO_WE_ARE.label,
+    title: aboutWhoWeAreRes?.title || whoWeAreRes?.title || defaults.WHO_WE_ARE.title,
+    titleAccent:
+      aboutWhoWeAreRes?.titleAccent !== undefined
+        ? aboutWhoWeAreRes.titleAccent
+        : whoWeAreRes?.titleAccent !== undefined
+        ? whoWeAreRes.titleAccent
+        : whoWeAreRes?.title || aboutWhoWeAreRes?.title
+        ? ""
+        : defaults.WHO_WE_ARE.titleAccent,
+    lead: aboutWhoWeAreRes?.lead || whoWeAreRes?.description1 || defaults.WHO_WE_ARE.lead,
     body: [
       whoWeAreRes?.description1 || defaults.WHO_WE_ARE.body[0],
       whoWeAreRes?.description2 || defaults.WHO_WE_ARE.body[1],
@@ -375,7 +385,12 @@ export async function getContent() {
     header,
     footer,
     careers,
-    facts: Array.isArray(whoWeAreRes?.facts) && whoWeAreRes.facts.length > 0
+    facts: Array.isArray(aboutWhoWeAreRes?.facts) && aboutWhoWeAreRes.facts.length > 0
+      ? aboutWhoWeAreRes.facts.map((f: any) => ({
+          value: f.value,
+          label: f.label,
+        }))
+      : Array.isArray(whoWeAreRes?.facts) && whoWeAreRes.facts.length > 0
       ? whoWeAreRes.facts.map((f: any) => ({
           value: f.value,
           label: f.label,

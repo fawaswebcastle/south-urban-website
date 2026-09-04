@@ -97,9 +97,11 @@ export function WhoWeAre({
 
               <h2 className="font-display mt-4 max-w-[18ch] text-[clamp(2.1rem,4.5vw,3.4rem)] font-semibold leading-[1.08] tracking-tight text-ink">
                 {WHO_WE_ARE.title}{" "}
-                <span className="block font-normal not-italic text-green">
-                  {WHO_WE_ARE.titleAccent}
-                </span>
+                {WHO_WE_ARE.titleAccent ? (
+                  <span className="block font-normal not-italic text-green">
+                    {WHO_WE_ARE.titleAccent}
+                  </span>
+                ) : null}
               </h2>
 
               {/* Interactive Pillar Selector Tabs */}

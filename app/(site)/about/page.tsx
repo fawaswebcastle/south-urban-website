@@ -117,9 +117,11 @@ export default async function AboutPage() {
               <span className="label text-gold">{WHO_WE_ARE.label}</span>
               <h1 className="font-display mt-3 max-w-[16ch] text-[clamp(2.3rem,5.5vw,4rem)] font-semibold leading-[1.04] tracking-tight text-white">
                 {WHO_WE_ARE.title}{" "}
-                <span className="block font-normal text-gold">
-                  {WHO_WE_ARE.titleAccent}
-                </span>
+                {WHO_WE_ARE.titleAccent ? (
+                  <span className="block font-normal text-gold">
+                    {WHO_WE_ARE.titleAccent}
+                  </span>
+                ) : null}
               </h1>
             </div>
 
