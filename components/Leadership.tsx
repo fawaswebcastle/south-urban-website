@@ -15,11 +15,23 @@ import type { Person } from "@/lib/content-types";
 export function Leadership({
   board: BOARD = BOARD_DEFAULT,
   management: MANAGEMENT = MANAGEMENT_DEFAULT,
+  leadership,
 }: {
   board?: readonly Person[];
   management?: readonly Person[];
+  leadership?: {
+    subtitle?: string;
+    heading?: string;
+    description?: string;
+    boardDirectorsLabel?: string;
+  };
 } = {}) {
   const [active, setActive] = useState<Person | null>(null);
+
+  const label = leadership?.subtitle || "LEADERSHIP & GOVERNANCE";
+  const title = leadership?.heading || "The people accountable to our members.";
+  const intro = leadership?.description || "Six directors and a four-person executive team. Select anyone to read their full background.";
+  const boardLabel = leadership?.boardDirectorsLabel || "Board Directors";
 
   useEffect(() => {
     if (!active) return;
@@ -36,9 +48,9 @@ export function Leadership({
     <section id="leadership" className="scroll-mt-28 bg-paper py-16 sm:py-24">
       <Container>
         <SectionHeading
-          label="Leadership & governance"
-          title="The people accountable to our members."
-          intro="Six directors and a four-person executive team. Select anyone to read their full background."
+          label={label}
+          title={title}
+          intro={intro}
         />
 
         {/* <p className="label mt-12 text-ink-soft/70">Board of Directors</p>
@@ -48,7 +60,7 @@ export function Leadership({
           ))}
         </div> */}
 
-        <p className="label mt-16 text-ink-soft/70">Board Directors</p>
+        <p className="label mt-16 text-ink-soft/70">{boardLabel}</p>
         <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-4">
           {MANAGEMENT.map((p, i) => (
             <PersonCard

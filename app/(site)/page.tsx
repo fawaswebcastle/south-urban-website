@@ -36,10 +36,10 @@ export default async function Home() {
       <NoticeBar notifications={notifications} />
       <WhoWeAre whoWeAre={content.whoWeAre} facts={content.facts} images={content.images} />
       <Services services={services} whatWeOffer={content.whatWeOffer} />
-      <Leadership board={people.board} management={people.management} />
-      <Gallery gallery={gallery} categories={galleryCategories} />
+      <Leadership board={people.board} management={people.management} leadership={content.leadershipSection} />
+      <Gallery gallery={gallery} categories={galleryCategories} visualStory={content.visualStory} />
       <Careers careers={content.careers} />
-      <Blog posts={posts} blogIntro={content.blogIntro} />
+      <Blog posts={posts} newsSection={content.homeNewsSection} blogIntro={content.blogIntro} />
       <Contact contact={content.contact} />
     </main>
   );

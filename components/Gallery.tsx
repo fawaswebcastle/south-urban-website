@@ -23,9 +23,15 @@ const SPANS = [
 export function Gallery({
   gallery: GALLERY = GALLERY_DEFAULT,
   categories,
+  visualStory,
 }: {
   gallery?: readonly GalleryItem[];
   categories?: readonly { name: string; order?: number }[];
+  visualStory?: {
+    subtitle?: string;
+    heading?: string;
+    description?: string;
+  };
 } = {}) {
   const filters = categories && categories.length > 0
     ? ["All", ...Array.from(new Set(categories.map((c) => c.name)))]
@@ -34,11 +40,15 @@ export function Gallery({
   const [filter, setFilter] = useState<string>("All");
   const shown = GALLERY.filter((g) => filter === "All" || g.category === filter);
 
+  const label = visualStory?.subtitle || "OUR VISUAL STORY";
+  const title = visualStory?.heading || "From the field.";
+  const intro = visualStory?.description;
+
   return (
     <section id="gallery" className="scroll-mt-28 bg-paper py-16 sm:py-24">
       <Container>
         <div className="flex flex-wrap items-end justify-between gap-6">
-          <SectionHeading label="Our visual story" title="From the field." className="mb-0" />
+          <SectionHeading label={label} title={title} intro={intro} className="mb-0" />
 
           <div className="flex gap-2">
             {filters.map((f) => (

@@ -9,25 +9,51 @@ import type { Post } from "@/lib/content-types";
 
 export function Blog({
   posts: POSTS = POSTS_DEFAULT,
+  newsSection,
   blogIntro: BLOG_INTRO,
 }: {
   posts?: readonly Post[];
+  newsSection?: {
+    subtitle?: string;
+    heading?: string;
+    description?: string;
+    buttonText?: string;
+    buttonUrl?: string;
+  };
   blogIntro?: { label?: string; title?: string; intro?: string };
 } = {}) {
   const postsToShow = POSTS.slice(0, 6);
   const [lead, ...rest] = postsToShow;
+
+  const label =
+    newsSection?.subtitle ||
+    BLOG_INTRO?.label ||
+    "NEWS & INSIGHTS";
+
+  const title =
+    newsSection?.heading ||
+    BLOG_INTRO?.title ||
+    "Updates from South Urban Agro";
+
+  const intro =
+    newsSection?.description ||
+    BLOG_INTRO?.intro ||
+    "Read our latest announcements, market analysis, and farming guides.";
+
+  const buttonText = newsSection?.buttonText || "View all articles";
+  const buttonUrl = newsSection?.buttonUrl || "/blog";
 
   return (
     <section id="blog" className="scroll-mt-28 bg-paper-deep/50 py-16 sm:py-24 border-y border-rule/70">
       <Container>
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
-            label={BLOG_INTRO?.label || "Insights & updates"}
-            title={BLOG_INTRO?.title || "Latest from our blog"}
-            intro={BLOG_INTRO?.intro || "Articles, market news, and insights from South Urban's team of agri-experts."}
+            label={label}
+            title={title}
+            intro={intro}
           />
-          <Button href="/blog" variant="outline" className="shrink-0">
-            View all articles
+          <Button href={buttonUrl} variant="outline" className="shrink-0">
+            {buttonText}
             <ArrowRight size={15} />
           </Button>
         </div>

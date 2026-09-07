@@ -530,6 +530,30 @@ export const BLOG = {
     "Scheme breakdowns, price outlooks and field notes from the desks that work with our members every day.",
 };
 
+export const HOME_NEWS_SECTION = {
+  subtitle: "NEWS & INSIGHTS",
+  heading: "Updates from South Urban Agro",
+  description:
+    "Read our latest announcements, market analysis, and farming guides.",
+  buttonText: "View all articles",
+  buttonUrl: "/blog",
+};
+
+export const HOME_VISUAL_STORY = {
+  subtitle: "OUR VISUAL STORY",
+  heading: "From the field.",
+  description:
+    "A glimpse of our farming community, sustainable practices, and daily operations.",
+};
+
+export const HOME_LEADERSHIP_SECTION = {
+  subtitle: "LEADERSHIP & GOVERNANCE",
+  heading: "The people accountable to our members.",
+  description:
+    "Six directors and a four-person executive team. Select anyone to read their full background.",
+  boardDirectorsLabel: "Board Directors",
+};
+
 /**
  * Blog posts. `slug` drives /blog/[slug]; `body` is rendered block by block by
  * the detail page.

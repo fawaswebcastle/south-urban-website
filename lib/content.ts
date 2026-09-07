@@ -48,6 +48,9 @@ export async function getContent() {
     membershipRes,
     activitiesRes,
     blogIntroRes,
+    homeNewsSectionRes,
+    homeVisualStoryRes,
+    homeLeadershipSectionRes,
     brandingRes,
     whatWeOfferRes,
     headerRes,
@@ -69,6 +72,9 @@ export async function getContent() {
     fetchStrapi<any>("/membership?populate[classes][populate]=*&populate[documents][populate]=*"),
     fetchStrapi<any>("/coop-activities?populate=*"),
     fetchStrapi<any>("/blog-intro?populate=*"),
+    fetchStrapi<any>("/home-news-section?populate=*"),
+    fetchStrapi<any>("/home-visual-story?populate=*"),
+    fetchStrapi<any>("/home-leadership-section?populate=*"),
     fetchStrapi<any>("/branding?populate=*"),
     fetchStrapi<any>("/what-we-offer?populate=*"),
     fetchStrapi<any>("/header?populate=*"),
@@ -311,6 +317,53 @@ export async function getContent() {
     intro: blogIntroRes?.intro || defaults.BLOG.intro,
   };
 
+  const homeNewsSection = {
+    ...defaults.HOME_NEWS_SECTION,
+    subtitle:
+      homeNewsSectionRes?.subtitle ||
+      blogIntroRes?.label ||
+      defaults.HOME_NEWS_SECTION.subtitle,
+    heading:
+      homeNewsSectionRes?.heading ||
+      blogIntroRes?.title ||
+      defaults.HOME_NEWS_SECTION.heading,
+    description:
+      homeNewsSectionRes?.description ||
+      blogIntroRes?.intro ||
+      defaults.HOME_NEWS_SECTION.description,
+    buttonText: homeNewsSectionRes?.buttonText || defaults.HOME_NEWS_SECTION.buttonText,
+    buttonUrl: homeNewsSectionRes?.buttonUrl || defaults.HOME_NEWS_SECTION.buttonUrl,
+  };
+
+  const visualStory = {
+    ...defaults.HOME_VISUAL_STORY,
+    subtitle:
+      homeVisualStoryRes?.subtitle ||
+      defaults.HOME_VISUAL_STORY.subtitle,
+    heading:
+      homeVisualStoryRes?.heading ||
+      defaults.HOME_VISUAL_STORY.heading,
+    description:
+      homeVisualStoryRes?.description ||
+      defaults.HOME_VISUAL_STORY.description,
+  };
+
+  const leadershipSection = {
+    ...defaults.HOME_LEADERSHIP_SECTION,
+    subtitle:
+      homeLeadershipSectionRes?.subtitle ||
+      defaults.HOME_LEADERSHIP_SECTION.subtitle,
+    heading:
+      homeLeadershipSectionRes?.heading ||
+      defaults.HOME_LEADERSHIP_SECTION.heading,
+    description:
+      homeLeadershipSectionRes?.description ||
+      defaults.HOME_LEADERSHIP_SECTION.description,
+    boardDirectorsLabel:
+      homeLeadershipSectionRes?.boardDirectorsLabel ||
+      defaults.HOME_LEADERSHIP_SECTION.boardDirectorsLabel,
+  };
+
   const rawSocials = (Array.isArray(headerRes?.socials) && headerRes.socials.length > 0)
     ? headerRes.socials
     : (Array.isArray(contactRes?.socials) && contactRes.socials.length > 0)
@@ -407,6 +460,9 @@ export async function getContent() {
     values,
     membership,
     blogIntro,
+    homeNewsSection,
+    visualStory,
+    leadershipSection,
     whatWeOffer,
     job: defaults.JOB,
     contact,
