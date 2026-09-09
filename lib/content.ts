@@ -119,7 +119,7 @@ export async function getContent() {
     regBadgeText: whoWeAreRes?.regBadgeText || "MSCS Reg: MSCS/CR/1664/2026",
     cardTitle: whoWeAreRes?.cardTitle || "South Urban Agro Co-op",
     cardSubtitle: whoWeAreRes?.cardSubtitle || "Serving Kerala & Tamil Nadu",
-    bannerImage: getStrapiMediaUrl(whoWeAreRes?.bannerImage?.url) || "/who_we_are_banner.png",
+    bannerImage: getStrapiMediaUrl(aboutWhoWeAreRes?.bannerImage?.url) || getStrapiMediaUrl(whoWeAreRes?.bannerImage?.url) || "/hero_banner.jpg",
     tabs: Array.isArray(whoWeAreRes?.tabs) && whoWeAreRes.tabs.length > 0
       ? whoWeAreRes.tabs.map((t: any) => ({
           id: t.tabId || t.id || t.label.toLowerCase().replace(/[^a-z0-9]+/g, "-"),

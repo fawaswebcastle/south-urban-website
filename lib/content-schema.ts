@@ -135,6 +135,7 @@ export const SECTION_SCHEMAS: SectionSchema[] = [
       { kind: "text", key: "titleAccent", label: "Heading, accented part", required: true, help: "Set in gold on the About page." },
       { kind: "textarea", key: "lead", label: "Short version", rows: 4, required: true, help: "Used on the home page and the About hero." },
       { kind: "stringList", key: "body", label: "Full version", itemLabel: "paragraph", multiline: true, help: "Used on the About page." },
+      { kind: "image", key: "bannerImage", label: "Hero / Banner Image", slot: "aboutHeroBanner" },
     ],
   },
   {
@@ -237,6 +238,7 @@ export const SECTION_SCHEMAS: SectionSchema[] = [
     fields: [
       { kind: "text", key: "label", label: "Eyebrow", required: true },
       { kind: "textarea", key: "statement", label: "Vision statement", rows: 6, required: true, help: "Set large on a plate, so it reads best under about 240 characters." },
+      { kind: "image", key: "bgImage", label: "Background Image", slot: "heroBanner" },
     ],
   },
   {
@@ -261,6 +263,9 @@ export const SECTION_SCHEMAS: SectionSchema[] = [
     title: "Objectives",
     where: "About page — the numbered list",
     fields: [
+      { kind: "text", key: "tag", label: "Eyebrow" },
+      { kind: "text", key: "title", label: "Heading" },
+      { kind: "image", key: "sideImage", label: "Side Image", slot: "aboutLandscape" },
       {
         kind: "list", key: "items", label: "Objectives", itemLabel: "objective", titleKey: "title",
         fields: [
@@ -291,6 +296,10 @@ export const SECTION_SCHEMAS: SectionSchema[] = [
     title: "Values",
     where: "About page — the card grid",
     fields: [
+      { kind: "text", key: "tag", label: "Eyebrow" },
+      { kind: "text", key: "title", label: "Heading" },
+      { kind: "text", key: "tileText", label: "Featured Tile Text" },
+      { kind: "image", key: "tileImage", label: "Featured Tile Image", slot: "aboutLandscape" },
       {
         kind: "list", key: "items", label: "Values", itemLabel: "value", titleKey: "title",
         fields: [
@@ -309,6 +318,8 @@ export const SECTION_SCHEMAS: SectionSchema[] = [
       { kind: "text", key: "label", label: "Eyebrow", required: true },
       { kind: "text", key: "title", label: "Heading", required: true },
       { kind: "textarea", key: "intro", label: "Introduction", rows: 4, required: true },
+      { kind: "text", key: "documentsTag", label: "Documents Card Tag" },
+      { kind: "image", key: "documentsImage", label: "Documents Card Image", slot: "aboutHeroBanner" },
       {
         kind: "list", key: "classes", label: "Share classes", itemLabel: "class", titleKey: "name",
         fields: [
