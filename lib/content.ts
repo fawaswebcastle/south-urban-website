@@ -183,8 +183,18 @@ export async function getContent() {
     title: overviewRes?.title || defaults.OVERVIEW.title,
     lead: overviewRes?.intro || defaults.OVERVIEW.lead,
     body: overviewRes?.paragraphs || defaults.OVERVIEW.body,
-    mainImage: overviewRes?.mainImage?.url ? getStrapiMediaUrl(overviewRes.mainImage.url) : defaults.IMAGES.harvest,
-    secondaryImage: overviewRes?.secondaryImage?.url ? getStrapiMediaUrl(overviewRes.secondaryImage.url) : defaults.IMAGES.award,
+    mainImage:
+      getStrapiMediaUrl(
+        overviewRes?.mainImage?.url ||
+          overviewRes?.mainImage?.data?.attributes?.url ||
+          overviewRes?.mainImage?.data?.url
+      ) || defaults.IMAGES.harvest,
+    secondaryImage:
+      getStrapiMediaUrl(
+        overviewRes?.secondaryImage?.url ||
+          overviewRes?.secondaryImage?.data?.attributes?.url ||
+          overviewRes?.secondaryImage?.data?.url
+      ) || defaults.IMAGES.award,
     floatingCardTitle: overviewRes?.floatingCardTitle || "Registered under the MSCS Act, 2002",
     floatingCardSubtitle: overviewRes?.floatingCardSubtitle || "New Delhi, Ministry of Cooperation.",
   };
