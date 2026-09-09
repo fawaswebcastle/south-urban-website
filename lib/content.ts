@@ -184,7 +184,8 @@ export async function getContent() {
     lead: overviewRes?.intro || defaults.OVERVIEW.lead,
     body: overviewRes?.paragraphs || defaults.OVERVIEW.body,
     mainImage: overviewRes?.mainImage?.url ? getStrapiMediaUrl(overviewRes.mainImage.url) : defaults.IMAGES.harvest,
-    floatingCardTitle: overviewRes?.floatingCardTitle || "Incorporated under Central Registrar",
+    secondaryImage: overviewRes?.secondaryImage?.url ? getStrapiMediaUrl(overviewRes.secondaryImage.url) : defaults.IMAGES.award,
+    floatingCardTitle: overviewRes?.floatingCardTitle || "Registered under the MSCS Act, 2002",
     floatingCardSubtitle: overviewRes?.floatingCardSubtitle || "New Delhi, Ministry of Cooperation.",
   };
 

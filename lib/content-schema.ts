@@ -183,6 +183,10 @@ export const SECTION_SCHEMAS: SectionSchema[] = [
       { kind: "text", key: "label", label: "Eyebrow", required: true },
       { kind: "text", key: "title", label: "Heading", required: true },
       { kind: "stringList", key: "body", label: "Paragraphs", itemLabel: "paragraph", multiline: true },
+      { kind: "image", key: "mainImage", label: "Main Feature Image", slot: "aboutPortrait" },
+      { kind: "image", key: "secondaryImage", label: "Secondary Inset Image", slot: "aboutSquare" },
+      { kind: "text", key: "floatingCardTitle", label: "Badge Title" },
+      { kind: "text", key: "floatingCardSubtitle", label: "Badge Subtitle" },
     ],
   },
   {
@@ -211,7 +215,12 @@ export const SECTION_SCHEMAS: SectionSchema[] = [
     title: "Registration record",
     where: "About page — 'Constituted under the MSCS Act, 2002'",
     fields: [
+      { kind: "text", key: "tag", label: "Eyebrow" },
+      { kind: "text", key: "title", label: "Heading" },
       { kind: "textarea", key: "intro", label: "Introduction", rows: 4, required: true },
+      { kind: "text", key: "bannerTitle", label: "Card Overlay Title" },
+      { kind: "text", key: "bannerSubtitle", label: "Card Overlay Subtitle" },
+      { kind: "image", key: "bannerImage", label: "Banner Image", slot: "aboutBanner" },
       {
         kind: "list", key: "rows", label: "Details", itemLabel: "detail", titleKey: "label",
         fields: [
@@ -268,7 +277,13 @@ export const SECTION_SCHEMAS: SectionSchema[] = [
     where: "About page — the closing band above the call to action",
     fields: [
       { kind: "text", key: "label", label: "Eyebrow", required: true },
+      { kind: "text", key: "title", label: "Heading" },
       { kind: "textarea", key: "statement", label: "Goals statement", rows: 6, required: true },
+      { kind: "image", key: "bgImage", label: "Background Image", slot: "heroBanner" },
+      { kind: "text", key: "primaryCtaLabel", label: "Primary Button Text" },
+      { kind: "text", key: "primaryCtaHref", label: "Primary Button URL" },
+      { kind: "text", key: "secondaryCtaLabel", label: "Secondary Button Text" },
+      { kind: "text", key: "secondaryCtaHref", label: "Secondary Button URL" },
     ],
   },
   {

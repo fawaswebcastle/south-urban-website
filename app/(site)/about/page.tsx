@@ -92,8 +92,8 @@ export default async function AboutPage() {
     <main>
       {/* ---------------------------------------------------------------- Hero */}
       <section className="on-dark relative isolate overflow-hidden bg-green-deep">
-        <Image
-          src="/hero_banner.jpg"
+        <SafeImage
+          src={(WHO_WE_ARE as any).bannerImage || "/hero_banner.jpg"}
           alt=""
           aria-hidden
           fill
@@ -170,8 +170,8 @@ export default async function AboutPage() {
                 </div>
 
                 <div className="absolute -bottom-8 -right-2 h-40 w-40 overflow-hidden rounded-2xl border-4 border-paper bg-card shadow-xl sm:h-48 sm:w-48 lg:-right-8">
-                  <Image
-                    src={IMAGES.award}
+                  <SafeImage
+                    src={(OVERVIEW as any).secondaryImage || IMAGES.award}
                     alt="Two members holding a cooperative excellence award beside their paddy field"
                     fill
                     className="object-cover"
@@ -181,7 +181,7 @@ export default async function AboutPage() {
 
                 <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-xl border border-white/20 bg-black/55 px-3 py-1.5 text-[11.5px] font-semibold text-white shadow-md backdrop-blur-md">
                   <ShieldCheck size={14} className="text-gold" />
-                  Registered under the MSCS Act, 2002
+                  {(OVERVIEW as any).floatingCardTitle || "Registered under the MSCS Act, 2002"}
                 </div>
               </div>
             </ScrollReveal>
