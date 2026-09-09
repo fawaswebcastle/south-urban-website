@@ -1,41 +1,94 @@
 stages:
-  - build
+  - build-and-push
+  - deploy
 
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: "/certs"
-  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-  IMAGE_REF: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-  IMAGE_LATEST: $CI_REGISTRY_IMAGE:latest
+  IMAGE_NAME: "fawaswebcastle/southurban-frontend"
 
-build-frontend-container:
-  stage: build
+# --------------------------------------------------
+# Build and Push Docker Image to Docker Hub
+# --------------------------------------------------
+build_and_push:
+  stage: build-and-push
   image: docker:27
   services:
-    - name: docker:27-dind
-      alias: docker
+    - docker:27-dind
   before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - echo "Logging in to Docker Hub..."
+    - echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
   script:
-    # Attempt to pull existing image for Docker layer caching
-    - docker pull $IMAGE_REF || docker pull $IMAGE_LATEST || true
-    # Build container image with caching
-    - >
-      docker build
-      --cache-from $IMAGE_REF
-      --cache-from $IMAGE_LATEST
-      -t $IMAGE_TAG
-      -t $IMAGE_REF
-      .
-    # If on the default branch (e.g. main/master), tag and push 'latest'
     - |
-      if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then
-        docker tag $IMAGE_TAG $IMAGE_LATEST
-        docker push $IMAGE_LATEST
+      echo "=== Preparing Docker tags for $IMAGE_NAME ==="
+      TAG_ARGS=""
+
+      # Production / Main branch -> latest & branch tag
+      if [ "$CI_COMMIT_REF_NAME" = "main" ] || [ "$CI_COMMIT_REF_NAME" = "production" ]; then
+        TAG_ARGS="$TAG_ARGS -t $IMAGE_NAME:latest -t $IMAGE_NAME:$CI_COMMIT_REF_SLUG"
+      elif [ "$CI_COMMIT_REF_NAME" = "develop" ]; then
+        TAG_ARGS="$TAG_ARGS -t $IMAGE_NAME:develop -t $IMAGE_NAME:$CI_COMMIT_REF_SLUG"
+      else
+        TAG_ARGS="$TAG_ARGS -t $IMAGE_NAME:$CI_COMMIT_REF_SLUG"
       fi
-    # Push image tagged with commit SHA and branch slug
-    - docker push $IMAGE_TAG
-    - docker push $IMAGE_REF
+
+      # Git Short SHA tag
+      TAG_ARGS="$TAG_ARGS -t $IMAGE_NAME:${CI_COMMIT_SHORT_SHA}"
+
+      # Semantic Version tag if triggered on git tag
+      if [ -n "$CI_COMMIT_TAG" ]; then
+        TAG_ARGS="$TAG_ARGS -t $IMAGE_NAME:$CI_COMMIT_TAG"
+      fi
+
+      echo "Building Docker image with tags: $TAG_ARGS"
+      docker build \
+        --label "org.opencontainers.image.title=South Urban Frontend" \
+        --label "org.opencontainers.image.description=South Urban Frontend Application" \
+        --label "org.opencontainers.image.source=$CI_PROJECT_URL" \
+        --label "org.opencontainers.image.revision=$CI_COMMIT_SHA" \
+        $TAG_ARGS \
+        -f Dockerfile .
+
+      echo "Pushing images to Docker Hub..."
+      for tag in $(docker images "$IMAGE_NAME" --format "{{.Tag}}"); do
+        echo "Pushing $IMAGE_NAME:$tag"
+        docker push "$IMAGE_NAME:$tag"
+      done
+
+      echo "Docker image build and push completed successfully."
   rules:
-    - if: '$CI_COMMIT_BRANCH'
-    - if: '$CI_COMMIT_TAG'
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "production" || $CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+/'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+
+# --------------------------------------------------
+# Trigger Coolify Deployment (Optional Webhook)
+# --------------------------------------------------
+trigger_coolify:
+  stage: deploy
+  image: alpine:latest
+  needs:
+    - build_and_push
+  before_script:
+    - apk add --no-cache curl
+  script:
+    - |
+      if [ -n "$COOLIFY_WEBHOOK_URL" ]; then
+        echo "Triggering Coolify deployment..."
+        curl --fail \
+          --silent \
+          --show-error \
+          --retry 3 \
+          --retry-delay 5 \
+          -X GET "$COOLIFY_WEBHOOK_URL"
+        echo "Coolify deployment triggered successfully."
+      else
+        echo "COOLIFY_WEBHOOK_URL variable is not set. Skipping deployment webhook."
+      fi
+  rules:
+    - if: '($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "production" || $CI_COMMIT_BRANCH == "develop") && $COOLIFY_WEBHOOK_URL'
+      when: on_success
+    - if: '$CI_COMMIT_TAG && $COOLIFY_WEBHOOK_URL'
+      when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "web" && $COOLIFY_WEBHOOK_URL'
+      when: on_success
