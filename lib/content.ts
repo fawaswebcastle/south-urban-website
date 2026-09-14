@@ -57,7 +57,7 @@ export async function getContent() {
     footerRes,
     careersRes,
   ] = await Promise.all([
-    fetchStrapi<any>("/hero?populate=*"),
+    fetchStrapi<any>("/hero?populate[slides][populate]=*&populate=*"),
     fetchStrapi<any>("/who-we-are?populate=*"),
     fetchStrapi<any>("/about-who-we-are?populate=*"),
     fetchStrapi<any>("/notice?populate=*"),
@@ -82,18 +82,49 @@ export async function getContent() {
     fetchStrapi<any>("/careers?populate=*"),
   ]);
 
+  const heroSlides = Array.isArray(heroRes?.slides) && heroRes.slides.length > 0
+    ? heroRes.slides.map((s: any, idx: number) => ({
+        id: s.id || `slide-${idx}`,
+        badge: s.badge || defaults.HERO.badge,
+        title: s.title || defaults.HERO.title,
+        titleAccent: s.titleAccent || defaults.HERO.titleAccent,
+        intro: s.intro || s.subtitle || defaults.HERO.intro,
+        actionText: s.actionText || defaults.HERO.actionText,
+        actionUrl: s.actionUrl || defaults.HERO.actionUrl,
+        secondaryActionText: s.secondaryActionText || defaults.HERO.secondaryActionText,
+        secondaryActionUrl: s.secondaryActionUrl || defaults.HERO.secondaryActionUrl,
+        bgImage:
+          getStrapiMediaUrl(
+            s.bgImage?.url ||
+              s.bgImage?.data?.attributes?.url ||
+              s.bgImage?.data?.url
+          ) ||
+          defaults.HERO.slides[idx % defaults.HERO.slides.length]?.bgImage ||
+          "/hero_banner.jpg",
+      }))
+    : defaults.HERO.slides;
+
   const hero = {
     ...defaults.HERO,
+    badge: heroRes?.badge || defaults.HERO.badge,
     title: heroRes?.title || defaults.HERO.title,
+    titleAccent: heroRes?.titleAccent || defaults.HERO.titleAccent,
     intro: heroRes?.subtitle || defaults.HERO.intro,
-    badge: heroRes?.badge,
-    actionText: heroRes?.actionText,
-    actionUrl: heroRes?.actionUrl,
+    actionText: heroRes?.actionText || defaults.HERO.actionText,
+    actionUrl: heroRes?.actionUrl || defaults.HERO.actionUrl,
+    secondaryActionText: heroRes?.secondaryActionText || defaults.HERO.secondaryActionText,
+    secondaryActionUrl: heroRes?.secondaryActionUrl || defaults.HERO.secondaryActionUrl,
+    slides: heroSlides,
     banner: {
       ...defaults.HERO.banner,
       main: {
         ...defaults.HERO.banner.main,
-        src: getStrapiMediaUrl(heroRes?.bgImage?.url) || defaults.HERO.banner.main.src,
+        src:
+          getStrapiMediaUrl(
+            heroRes?.bgImage?.url ||
+              heroRes?.bgImage?.data?.attributes?.url ||
+              heroRes?.bgImage?.data?.url
+          ) || defaults.HERO.banner.main.src,
       },
     },
   };

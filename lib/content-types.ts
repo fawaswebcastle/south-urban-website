@@ -78,6 +78,19 @@ export type CompanyDetails = {
   rows: readonly { label: string; value: string }[];
 };
 
+export type BannerSlide = {
+  id?: string;
+  badge?: string;
+  title: string;
+  titleAccent?: string;
+  intro: string;
+  actionText?: string;
+  actionUrl?: string;
+  secondaryActionText?: string;
+  secondaryActionUrl?: string;
+  bgImage?: string;
+};
+
 export type HeroContent = {
   badge?: string;
   title: string;
@@ -85,6 +98,9 @@ export type HeroContent = {
   intro: string;
   actionText?: string;
   actionUrl?: string;
+  secondaryActionText?: string;
+  secondaryActionUrl?: string;
+  slides?: readonly BannerSlide[];
   banner: {
     main: { src: string; alt: string; caption: string };
     side: readonly { src: string; alt: string; caption: string; note: string }[];

@@ -81,10 +81,56 @@ export const NAV_LINKS = [
 ];
 
 export const HERO = {
+  badge: "Government of India Registered... Serving Members Since 2009",
   title: "Empowering Farmers,",
   titleAccent: "Building Communities",
   intro:
     "A member-owned cooperative bringing fair inputs, honest credit and better markets to the people who grow our food.",
+  actionText: "Explore Member Services...",
+  actionUrl: "/#services",
+  secondaryActionText: "Who we are",
+  secondaryActionUrl: "/#who-we-are",
+  slides: [
+    {
+      id: "slide-1",
+      badge: "Government of India Registered... Serving Members Since 2009",
+      title: "Empowering Farmers,",
+      titleAccent: "Building Communities",
+      intro:
+        "A member-owned cooperative bringing fair inputs, honest credit and better markets to the people who grow our food.",
+      actionText: "Explore Member Services...",
+      actionUrl: "/#services",
+      secondaryActionText: "Who we are",
+      secondaryActionUrl: "/#who-we-are",
+      bgImage: "/hero_banner.jpg",
+    },
+    {
+      id: "slide-2",
+      badge: "Financial Facilitation · Fair Credit Access",
+      title: "Direct Member Credit &",
+      titleAccent: "Agricultural Financing",
+      intro:
+        "Access transparent short-term credit, farm mechanisation support, and input subsidies directly through your Society membership.",
+      actionText: "Learn About Services",
+      actionUrl: "/#services",
+      secondaryActionText: "Membership Details",
+      secondaryActionUrl: "/about",
+      bgImage: "/blog_subsidy.jpg",
+    },
+    {
+      id: "slide-3",
+      badge: "Agritech & Market Aggregation",
+      title: "Sustainable Processing &",
+      titleAccent: "Direct Market Reach",
+      intro:
+        "Connecting farmers in Kerala and Tamil Nadu to high-value markets, warehousing, cold storage, and certified bio-inputs.",
+      actionText: "Read Latest News",
+      actionUrl: "/blog",
+      secondaryActionText: "Talk to the Society",
+      secondaryActionUrl: "/#contact",
+      bgImage: "/blog_agritech.jpg",
+    },
+  ],
   /** Modern South Indian farming — precision growing, drone spraying and
    *  digital member service, drawn from the Society's own library. */
   banner: {
